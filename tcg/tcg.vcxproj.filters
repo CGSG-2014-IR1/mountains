@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{ea601636-a254-4d13-b1ce-122e28eb0604}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Input">
+      <UniqueIdentifier>{7c3751fa-4a4b-4bc3-a220-901873bd70af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Units">
+      <UniqueIdentifier>{d09c431a-b853-493f-8b61-fc03201020af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Render">
+      <UniqueIdentifier>{183f55ba-68e2-4541-b31a-74afdafd2ef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Render\Resources">
+      <UniqueIdentifier>{52d786cd-6aa3-46b7-8307-bf16da8babba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Render\Primitives">
+      <UniqueIdentifier>{5e271e4e-c295-46c3-ae0a-d5869e00d009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math support">
+      <UniqueIdentifier>{537c4cec-761c-4bc6-affe-d98e492c3d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math support\TSG">
+      <UniqueIdentifier>{60c45f72-ce79-4336-a88a-4d3dc3a9cf20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math support\Collision detection">
+      <UniqueIdentifier>{5b81cdef-31cf-4d95-837c-4b73d0e51621}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Support">
+      <UniqueIdentifier>{6fc388cd-40fb-40b6-9ef4-bb1529185c32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Support\SOIL">
+      <UniqueIdentifier>{0c3fc845-8107-4850-9c0d-8b9803f1b73c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows dependent">
+      <UniqueIdentifier>{5d2e9cd0-a04c-4cfd-9680-13c49c694710}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\animation.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\unit.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\input.cpp">
+      <Filter>Source Files\Animation\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\units\unit_road.cpp">
+      <Filter>Source Files\Animation\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\primitive.cpp">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\render.cpp">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\resource\material.cpp">
+      <Filter>Source Files\Animation\Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\resource\shader.cpp">
+      <Filter>Source Files\Animation\Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\resource\texture.cpp">
+      <Filter>Source Files\Animation\Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\prim\primitive_trimesh.cpp">
+      <Filter>Source Files\Animation\Render\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="math\computational_geometry.cpp">
+      <Filter>Source Files\Math support</Filter>
+    </ClCompile>
+    <ClCompile Include="math\triangulation.cpp">
+      <Filter>Source Files\Math support</Filter>
+    </ClCompile>
+    <ClCompile Include="math\cd.cpp">
+      <Filter>Source Files\Math support\Collision detection</Filter>
+    </ClCompile>
+    <ClCompile Include="math\cd_plane.cpp">
+      <Filter>Source Files\Math support\Collision detection</Filter>
+    </ClCompile>
+    <ClCompile Include="math\cd_triangle.cpp">
+      <Filter>Source Files\Math support\Collision detection</Filter>
+    </ClCompile>
+    <ClCompile Include="support\SOIL\image_DXT.c">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="support\SOIL\image_helper.c">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="support\SOIL\SOIL.c">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="support\SOIL\stb_image_aug.c">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="win\window.cpp">
+      <Filter>Source Files\Windows dependent</Filter>
+    </ClCompile>
+    <ClCompile Include="win\window_message.cpp">
+      <Filter>Source Files\Windows dependent</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\animation.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\timer.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\unit.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\input.h">
+      <Filter>Source Files\Animation\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_road.h">
+      <Filter>Source Files\Animation\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\primitive.h">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\render.h">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\resource\material.h">
+      <Filter>Source Files\Animation\Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\resource\shader.h">
+      <Filter>Source Files\Animation\Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\resource\texture.h">
+      <Filter>Source Files\Animation\Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\prim\primitive_samples.h">
+      <Filter>Source Files\Animation\Render\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="math\computational_geometry.h">
+      <Filter>Source Files\Math support</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSG.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGCAM.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGCOLOR.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGDEF.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGMATRX.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGQUAT.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGRAY.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGSTOCK.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGTRANS.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TSG\TSGVECT.H">
+      <Filter>Source Files\Math support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="math\cd.h">
+      <Filter>Source Files\Math support\Collision detection</Filter>
+    </ClInclude>
+    <ClInclude Include="support\SOIL\stbi_DDS_aug_c.h">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="support\SOIL\image_DXT.h">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="support\SOIL\image_helper.h">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="support\SOIL\SOIL.h">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="support\SOIL\stb_image_aug.h">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="support\SOIL\stbi_DDS_aug.h">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="win\window.h">
+      <Filter>Source Files\Windows dependent</Filter>
+    </ClInclude>
+    <ClInclude Include="math\noise.h">
+      <Filter>Source Files\Math support</Filter>
+    </ClInclude>
+    <ClInclude Include="math\math.h">
+      <Filter>Source Files\Math support</Filter>
+    </ClInclude>
+    <ClInclude Include="support\hm_gen.h">
+      <Filter>Source Files\Support</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="support\SOIL\SOIL.lib">
+      <Filter>Source Files\Support\SOIL</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
