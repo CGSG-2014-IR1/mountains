@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering">
+      <UniqueIdentifier>{8a5e5301-4521-439a-8e67-196bf16c7124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Windows Depended">
+      <UniqueIdentifier>{59ed9cb4-0e28-4121-94c6-895a15f2de18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support">
+      <UniqueIdentifier>{3c86a408-cf76-4e95-852c-c8a705da8294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{c91e3324-632e-4eea-bb46-ce8e5258c19e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Resources">
+      <UniqueIdentifier>{3d83af4d-5cf5-47d9-a209-0f6228306846}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Resources\Shader">
+      <UniqueIdentifier>{53fc7af6-58f3-439f-861f-2a3ce4c0b4d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture">
+      <UniqueIdentifier>{f0e695ae-c611-4ef9-ae0f-97f4f25068d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Resources\Material">
+      <UniqueIdentifier>{b007b2b6-935d-432d-9435-a086905d7a95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Primitive">
+      <UniqueIdentifier>{64b0b989-e356-45a9-af39-f9590211adf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Units">
+      <UniqueIdentifier>{ebb0e38b-8062-47b5-b1b1-e3c2e74fd1c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Primitive\Primitive Samples">
+      <UniqueIdentifier>{c6315600-bf0f-4d90-9110-59f55052796d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Collision Detection">
+      <UniqueIdentifier>{85fb01cc-35c1-4922-8b56-bc4c72a910d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Input">
+      <UniqueIdentifier>{d3917685-0b66-4cdf-84ac-aab1f0c30d36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL">
+      <UniqueIdentifier>{0bebad86-3ef8-4aaf-8e6d-c8ea8e584c69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math Support">
+      <UniqueIdentifier>{f4548e56-7d9b-45b2-89a4-3174aba61b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math Support\TSG">
+      <UniqueIdentifier>{df93a9ab-3939-4983-a725-587ad038890c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="render.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support</Filter>
+    </ClInclude>
+    <ClInclude Include="window.h">
+      <Filter>Source Files\Animation &amp; Rendering\Windows Depended</Filter>
+    </ClInclude>
+    <ClInclude Include="animation.h">
+      <Filter>Source Files\Animation &amp; Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>Source Files\Animation &amp; Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="def.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="primitive.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="material.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="unit.h">
+      <Filter>Source Files\Animation &amp; Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="primitive_samples.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Primitive\Primitive Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>Source Files\Animation &amp; Rendering\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="cd.h">
+      <Filter>Source Files\Collision Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="unit_road.h">
+      <Filter>Source Files\Animation &amp; Rendering\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="computational_geometry.h">
+      <Filter>Source Files\Math Support</Filter>
+    </ClInclude>
+    <ClInclude Include="SOIL\image_DXT.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="SOIL\image_helper.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="SOIL\SOIL.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="SOIL\stb_image_aug.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="SOIL\stbi_DDS_aug.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="SOIL\stbi_DDS_aug_c.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSG.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSGCAM.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSGCOLOR.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSGDEF.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSGMATRX.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSGRAY.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+    <ClInclude Include="TSG\TSGVECT.H">
+      <Filter>Source Files\Math Support\TSG</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="render.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support</Filter>
+    </ClCompile>
+    <ClCompile Include="window.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Windows Depended</Filter>
+    </ClCompile>
+    <ClCompile Include="window_message.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Windows Depended</Filter>
+    </ClCompile>
+    <ClCompile Include="animation.cpp">
+      <Filter>Source Files\Animation &amp; Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="primitive.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="material.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="unit.cpp">
+      <Filter>Source Files\Animation &amp; Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="primitive_trimesh.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Primitive\Primitive Samples</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="cd.cpp">
+      <Filter>Source Files\Collision Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="cd_plane.cpp">
+      <Filter>Source Files\Collision Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="cd_triangle.cpp">
+      <Filter>Source Files\Collision Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_road.cpp">
+      <Filter>Source Files\Animation &amp; Rendering\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="triangulation.cpp">
+      <Filter>Source Files\Math Support</Filter>
+    </ClCompile>
+    <ClCompile Include="computational_geometry.cpp">
+      <Filter>Source Files\Math Support</Filter>
+    </ClCompile>
+    <ClCompile Include="SOIL\image_DXT.c">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="SOIL\image_helper.c">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="SOIL\SOIL.c">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="SOIL\stb_image_aug.c">
+      <Filter>Source Files\Animation &amp; Rendering\Rendering Support\Resources\Texture\SOIL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\house.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\house.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\mountain.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\mountain.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\road.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\road.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
