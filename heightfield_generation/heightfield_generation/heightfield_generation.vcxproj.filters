@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{e2e5ce7f-a870-47bb-b5f9-7f26188d5a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{bd84b845-0ba6-4afc-80f1-4799bf326ada}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Render">
+      <UniqueIdentifier>{970b9958-4e4c-4d6f-b8a1-de22bca8f568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Render\Resource">
+      <UniqueIdentifier>{38a3110e-c7d7-42a2-bb9c-7151249b017d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Render\Geometry">
+      <UniqueIdentifier>{846f7091-4fd3-4db3-bab5-dba5a1e3ef95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Units">
+      <UniqueIdentifier>{6c218e53-7706-4fa0-b547-6bffdb03228e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bin">
+      <UniqueIdentifier>{d72829b9-4acb-46b2-b4cc-272c83ce9dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bin\Shaders">
+      <UniqueIdentifier>{a481f601-064f-4704-9b54-3ca0a87a27b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bin\Shaders\Default">
+      <UniqueIdentifier>{a3dad44b-0f2d-47ea-92b7-3f015cd4b2b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bin\Shaders\Heightfield">
+      <UniqueIdentifier>{cc9464f5-f690-49f8-a93a-40c6fc5d9be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bin\Shaders\HM view">
+      <UniqueIdentifier>{76250c5e-6f9f-4404-ba95-d5e0f7307e08}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="def.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="math\color.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\math.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\matrix.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\noise.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\ray2.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\vec2.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\vec3.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\anim.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\camera.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\timer.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\unit.h">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\buffer.h">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\geometry.h">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\primitive.h">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\geometry\patch3.h">
+      <Filter>Source Files\Animation\Render\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\geometry\trimesh.h">
+      <Filter>Source Files\Animation\Render\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\resource\material.h">
+      <Filter>Source Files\Animation\Render\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\resource\shader.h">
+      <Filter>Source Files\Animation\Render\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\render\resource\texture.h">
+      <Filter>Source Files\Animation\Render\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_hf_gen.h">
+      <Filter>Source Files\Animation\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="math\hm_gen.h">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_hm_view.h">
+      <Filter>Source Files\Animation\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_tess_demo.h">
+      <Filter>Source Files\Animation\Units</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\anim.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\buffer.cpp">
+      <Filter>Source Files\Animation\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\resource\shader.cpp">
+      <Filter>Source Files\Animation\Render\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\render\resource\texture.cpp">
+      <Filter>Source Files\Animation\Render\Resource</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\shader\hmview\.frag">
+      <Filter>Source Files\Bin\Shaders\HM view</Filter>
+    </None>
+    <None Include="bin\shader\hmview\.tctrl">
+      <Filter>Source Files\Bin\Shaders\HM view</Filter>
+    </None>
+    <None Include="bin\shader\hmview\.teval">
+      <Filter>Source Files\Bin\Shaders\HM view</Filter>
+    </None>
+    <None Include="bin\shader\hmview\.vert">
+      <Filter>Source Files\Bin\Shaders\HM view</Filter>
+    </None>
+  </ItemGroup>
+</Project>
