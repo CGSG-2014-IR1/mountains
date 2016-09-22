@@ -1,0 +1,49 @@
+#version 420
+
+layout (vertices = 3) out;
+
+const float TessFactor = 40;
+
+in vec2 Tex[];
+out vec2 TexCoords[];
+
+uniform mat4 VP;
+
+float saturate( float x )
+{
+  return max(-1, min(1, x));
+}
+
+float CalcFactor( vec4 p0, vec4 p1 )
+{
+  vec4 pp0 = VP * p0, pp1 = VP * p1;
+  /*
+  pp0.x = saturate(pp0.x);
+  pp0.y = saturate(pp0.y);
+  pp1.x = saturate(pp0.x);
+  pp1.y = saturate(pp1.y);
+  */
+
+  if (gl_out[2].gl_Position.y < 0 &&
+      gl_out[1].gl_Position.y < 0 &&
+      gl_out[0].gl_Position.y < 0)
+    return 1;
+
+  float d = distance(pp0.xyz / pp0.w, pp1.xyz / pp1.w);
+
+  return d * TessFactor;
+}
+
+void main( void )
+{
+  gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+  TexCoords[gl_InvocationID] = Tex[gl_InvocationID];
+
+  barrier();
+
+  gl_TessLevelOuter[2] = CalcFactor(gl_out[0].gl_Position, gl_out[1].gl_Position);  
+  gl_TessLevelOuter[0] = CalcFactor(gl_out[1].gl_Position, gl_out[2].gl_Position);
+  gl_TessLevelOuter[1] = CalcFactor(gl_out[2].gl_Position, gl_out[0].gl_Position);
+
+  gl_TessLevelInner[0] = (gl_TessLevelOuter[0] + gl_TessLevelOuter[1] + gl_TessLevelOuter[2]) / 3.0;
+}

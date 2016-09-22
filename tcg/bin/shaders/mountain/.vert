@@ -11,10 +11,12 @@ layout(location = 7) in vec2 InP1;
 layout(location = 8) in vec2 InH0;
 layout(location = 9) in vec2 InH1;
 
-uniform sampler2D height;
+uniform sampler2D TextureHeight;
 
 uniform mat4 MatrWVP;
 uniform mat4 MatrNWorld;
+
+uniform float Height;
 
 out vec2 texCoord;
 out float id;
@@ -23,19 +25,19 @@ void main( void )
 {
   if (InID == 0)
     gl_Position = MatrWVP *
-      vec4(InPosition.x, texture2D(height, vec2(InPosition.x / 60, InPosition.z / 60)).a * 4, InPosition.z, 1);
+      vec4(InPosition.x, texture2D(TextureHeight, vec2(InPosition.x / 60, InPosition.z / 60)).a * Height, InPosition.z, 1);
   else
   {
     if (length(vec2(InPosition.x, InPosition.z) - InP1) == 0)
     {
-      float h1 = texture2D(height, InH1).a * 4;
+      float h1 = texture2D(TextureHeight, InH1).a * Height;
       if (h1 > 1.5)
         h1 *= 0.95;
       gl_Position = MatrWVP * vec4(InPosition.x, h1, InPosition.z, 1);
     }
     else
     {
-      float h0 = texture2D(height, InH0).a * 4, h1 = texture2D(height, InH1).a * 4;
+      float h0 = texture2D(TextureHeight, InH0).a * Height, h1 = texture2D(TextureHeight, InH1).a * Height;
       if (h0 > 1.5)
         h0 *= 0.95;
       if (h1 > 1.5)

@@ -11,9 +11,11 @@ layout(location = 7) in vec2 InP1;
 layout(location = 8) in vec2 InH0;
 layout(location = 9) in vec2 InH1;
 
-uniform sampler2D height;
+uniform sampler2D TextureHeight;
 
 uniform mat4 MatrWVP;
+
+uniform float Height;
 
 out vec4 color;
 out vec3 normal;
@@ -22,16 +24,16 @@ out vec2 texCoordMountain;
 
 void main( void )
 {
-  float h = texture2D(height, InHeight).a * 4;
+  float h = texture2D(TextureHeight, InHeight).a * Height;
   if (h > 1.5)
     h *= 0.95;
   gl_Position = MatrWVP * vec4(InPosition.x, h, InPosition.z, 1);
   vec3
     n0 = normalize(vec3(InP0.x - InPosition.x,
-                        texture2D(height, InH0).a * 4 - texture2D(height, InHeight).a * 4,
+                        texture2D(TextureHeight, InH0).a * Height - texture2D(TextureHeight, InHeight).a * Height,
                         InP0.y - InPosition.z)),
     n1 = normalize(vec3(InP1.x - InPosition.x,
-                        texture2D(height, InH1).a * 4 - texture2D(height, InHeight).a * 4,
+                        texture2D(TextureHeight, InH1).a * Height - texture2D(TextureHeight, InHeight).a * Height,
                         InP1.y - InPosition.z));
   float sqrt0 = sqrt(n0.x * n0.x + n0.z * n0.z), sqrt1 = sqrt(n1.x * n1.x + n1.z * n1.z);
   n0 = vec3(-n0.x * n0.y / sqrt0, sqrt0, -n0.y * n0.z / sqrt0);

@@ -69,6 +69,36 @@ namespace tcg
      */
     static CHAR * LoadText( CHAR *FileName );
 
+    /* Shader float uniform set function.
+     * ARGUMENTS:
+     *   - uniform name:
+     *       const char *Name;
+     *   - uniform value:
+     *       float Val.
+     * RETURNS: None.
+     */
+    VOID SetUniform( const char *Name, float Val );
+
+    /* Shader integer uniform set function.
+     * ARGUMENTS:
+     *   - uniform name:
+     *       const char *Name;
+     *   - uniform value:
+     *       int Val.
+     * RETURNS: None.
+     */
+    VOID SetUniform( const char *Name, int Val );
+
+    /* Shader matrix uniform set function.
+     * ARGUMENTS:
+     *   - uniform name:
+     *       const char *Name;
+     *   - uniform value:
+     *       const matr &Val.
+     * RETURNS: None.
+     */
+    VOID SetUniform( const char *Name, const matr &Val );
+
   public:
     /* Class destructor.
      * ARGUMENTS: None.

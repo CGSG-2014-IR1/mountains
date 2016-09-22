@@ -68,10 +68,11 @@ namespace tcg
     UINT
       VABuf, VBuf, IBuf,
       NoofV, NoofI;
-    material *Material;
     anim *Ani;
 
   public:
+    material *Material;
+
     /* Class constructor.
      * ARGUMENTS:
      *   - animation:
@@ -96,7 +97,6 @@ namespace tcg
      */
     virtual VOID UpdateShaderContext( VOID );
 
-  protected:
     /* Set buffers function.
      * ARGUMENTS:
      *   - vertices array:
@@ -105,10 +105,26 @@ namespace tcg
      *       INT *I;
      *   - number of vertices and indices:
      *       INT NoofV, NoofI;
-     * RETURNS:
-     *   (prim &) self reference.
+     * RETURNS: None.
      */
     virtual VOID SetBuffers( vertex *V, INT *I, INT NoofV, INT NoofI );
+
+    /* Delete buffers function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    virtual VOID DeleteBuffers( VOID )
+    {
+      glBindVertexArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      if (VABuf != -1)
+        glDeleteVertexArrays(1, (GLuint *)&VABuf);
+      if (VBuf != -1)
+        glDeleteBuffers(1, (GLuint *)&VBuf);
+      if (IBuf != -1)
+        glDeleteBuffers(1, (GLuint *)&IBuf);
+    } /* End of 'DeleteBuffers' function */
 
   private:
     /* Class constructor.

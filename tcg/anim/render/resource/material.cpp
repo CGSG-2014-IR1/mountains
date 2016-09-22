@@ -82,7 +82,7 @@ VOID tcg::material::Apply( anim *Ani )
     glUniformMatrix4fv(loc, 1, FALSE, (FLT *)Ani->Camera.Proj.M);
   loc = glGetUniformLocation(Shader->Program, "MatrNWorld");
   if (loc != -1)
-    glUniformMatrix4fv(loc, 1, FALSE, (FLT *)MatrNW);  
+    glUniformMatrix4fv(loc, 1, FALSE, (FLT *)MatrNW);
 
   /* Animation time */
   loc = glGetUniformLocation(Shader->Program, "Time");
@@ -102,6 +102,14 @@ VOID tcg::material::Apply( anim *Ani )
   loc = glGetUniformLocation(Shader->Program, "Shininess");
   if (loc != -1)
     glUniform1f(loc, Shininess);
+
+  /* Setup general uniforms */
+  for (auto &i : UnifFloat)
+    Shader->SetUniform(i.first.c_str(), i.second);
+  for (auto &i : UnifInt)
+    Shader->SetUniform(i.first.c_str(), i.second);
+  for (auto &i : UnifMatr)
+    Shader->SetUniform(i.first.c_str(), i.second);
 
   for (INT i = 0; i < Textures.size(); i++)
   {
@@ -166,5 +174,44 @@ tcg::material * tcg::material_manager::GetMaterial( CHAR *Name )
       return Materials[i];
   return NULL;
 } /* End of 'tcg::material_manager::GetMaterial' function */
+
+/* Float uniform add function.
+ * ARGUMENTS:
+ *   - uniform name:
+ *       const char *Name;
+ *   - uniform value:
+ *       float Val.
+ * RETURNS: None.
+ */
+VOID tcg::material::AddUniform( const char *Name, float Val )
+{
+  UnifFloat.push_back(std::pair<std::string, float>(Name, Val));
+} /* End of 'tcg::material::AddUniform function */
+
+/* Integer uniform add function.
+ * ARGUMENTS:
+ *   - uniform name:
+ *       const char *Name;
+ *   - uniform value:
+ *       int Val.
+ * RETURNS: None.
+ */
+VOID tcg::material::AddUniform( const char *Name, int Val )
+{
+  UnifInt.push_back(std::pair<std::string, int>(Name, Val));
+} /* End of 'tcg::material::AddUniform function */
+
+/* Matrix uniform add function.
+ * ARGUMENTS:
+ *   - uniform name:
+ *       const char *Name;
+ *   - uniform value:
+ *       const matr &Val.
+ * RETURNS: None.
+ */
+VOID tcg::material::AddUniform( const char *Name, const matr &Val )
+{
+  UnifMatr.push_back(std::pair<std::string, matr>(Name, Val));
+} /* End of 'tcg::material::AddUniform function */
 
 /* END OF 'material.cpp' FILE */

@@ -1,0 +1,33 @@
+#version 420 core
+
+//equal_spacing
+//fractional_odd_spacing
+//fractional_even_spacing
+layout (triangles, fractional_odd_spacing, ccw) in;
+
+out vec3 Pos;
+out vec2 Tex;
+
+uniform mat4 VP;
+
+uniform sampler2D Texture0;
+
+in vec2 TexCoords[];
+
+void main( void )
+{
+  vec4 pos =
+    gl_in[0].gl_Position * gl_TessCoord.x +
+    gl_in[1].gl_Position * gl_TessCoord.y +
+    gl_in[2].gl_Position * gl_TessCoord.z;
+
+  Tex =
+    TexCoords[0] * gl_TessCoord.x +
+    TexCoords[1] * gl_TessCoord.y +
+    TexCoords[2] * gl_TessCoord.z;
+  pos.y += texture2D(Texture0, Tex).a;
+
+  Pos = pos.xyz;
+
+  gl_Position = VP * pos;
+}

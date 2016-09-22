@@ -39,6 +39,12 @@ namespace tcg
     FLT Shininess;
     shader *Shader;
     std::vector<texture *> Textures;
+
+    /* Uniforms */
+    std::vector<std::pair<std::string, FLOAT>> UnifFloat;
+    std::vector<std::pair<std::string, INT>> UnifInt;
+    std::vector<std::pair<std::string, matr>> UnifMatr;
+
   public:
     /* Class constructor.
      * ARGUMENTS:
@@ -76,6 +82,36 @@ namespace tcg
      *       anim *Ani;
      */
     VOID Apply( anim *Ani );
+
+    /* Float uniform add function.
+     * ARGUMENTS:
+     *   - uniform name:
+     *       const char *Name;
+     *   - uniform value:
+     *       float Val.
+     * RETURNS: None.
+     */
+    VOID AddUniform( const char *Name, float Val );
+
+    /* Integer uniform add function.
+     * ARGUMENTS:
+     *   - uniform name:
+     *       const char *Name;
+     *   - uniform value:
+     *       int Val.
+     * RETURNS: None.
+     */
+    VOID AddUniform( const char *Name, int Val );
+
+    /* Matrix uniform add function.
+     * ARGUMENTS:
+     *   - uniform name:
+     *       const char *Name;
+     *   - uniform value:
+     *       const matr &Val.
+     * RETURNS: None.
+     */
+    VOID AddUniform( const char *Name, const matr &Val );
   }; /* End of 'material' class */
 
   /* Material manager class */

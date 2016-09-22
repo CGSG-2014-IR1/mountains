@@ -226,4 +226,49 @@ tcg::shader * tcg::shader_manager::GetShader( CHAR *Name )
   return Shaders.back();
 } /* End of 'tcg::shader_manager::GetShader' function */
 
+/* Shader float uniform set function.
+ * ARGUMENTS:
+ *   - uniform name:
+ *       const char *Name;
+ *   - uniform value:
+ *       float Val.
+ * RETURNS: None.
+ */
+VOID tcg::shader::SetUniform( const char *Name, float Val )
+{
+  int loc = glGetUniformLocation(Program, Name);
+  if (loc != -1)
+    glUniform1f(loc, Val);
+} /* End of 'tcg::shader::SetUniform' function */
+
+/* Shader integer uniform set function.
+ * ARGUMENTS:
+ *   - uniform name:
+ *       const char *Name;
+ *   - uniform value:
+ *       int Val.
+ * RETURNS: None.
+ */
+VOID tcg::shader::SetUniform( const char *Name, int Val )
+{
+  int loc = glGetUniformLocation(Program, Name);
+  if (loc != -1)
+    glUniform1i(loc, Val);
+} /* End of 'tcg::shader::SetUniform' function */
+
+/* Shader matrix uniform set function.
+ * ARGUMENTS:
+ *   - uniform name:
+ *       const char *Name;
+ *   - uniform value:
+ *       const matr &Val.
+ * RETURNS: None.
+ */
+VOID tcg::shader::SetUniform( const char *Name, const matr &Val )
+{
+  int loc = glGetUniformLocation(Program, Name);
+  if (loc != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, Val.A[0]);
+} /* End of 'tcg::shader::SetUniform' function */
+
 /* END OF 'shader.cpp' FILE */
