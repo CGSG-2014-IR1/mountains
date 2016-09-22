@@ -71,7 +71,7 @@ VOID tcg::primitive::trimesh::CreateMountain( anim *Ani, const std::vector<vec> 
   SetBuffers(V, I, Points.size(), Triangles.size() * 3);
 
   Material = Ani->AddMaterial("mountain", "mountain");
-  Material->AddTexture(Ani->AddTexture("height", "mountain_height.jpg"));
+  Material->AddTexture(Ani->AddTexture("height", "heightmap1.float"));
   Material->AddTexture(Ani->AddTexture("light", "mountain_light.jpg"));
 
   delete V;

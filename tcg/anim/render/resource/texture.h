@@ -124,29 +124,19 @@ namespace tcg
         INT len;
         if ((len = ftell(F)) == (w * h * sizeof(FLOAT) + sizeof(INT) * 2))
         {
-          FLOAT *pix = new FLOAT[w * h * sizeof(FLOAT)];
+          FLOAT *pix = new FLOAT[w * h];
           fseek(F, sizeof(INT) * 2, SEEK_SET);
           fread(pix, sizeof(float), w * h, F);
-          BYTE *image = new BYTE[w * h * 3];
-          for (INT i = 0; i < w * h; i++)
-          {
-            BYTE c = pix[i] * 255;
-            image[i * 3] = c;
-            image[i * 3 + 1] = c;
-            image[i * 3 + 2] = c;
-          }
-
-          //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-          //glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI, w, h, 0, GL_ALPHA, GL_FLOAT, image);
 
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-          //glGenerateMipmap(GL_TEXTURE_2D);
-          delete[] image;
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI, w, h, 0, GL_ALPHA, GL_FLOAT, pix);
+          glGenerateMipmap(GL_TEXTURE_2D);
+
+          delete[] pix;
           isok = TRUE;
         }
         fclose(F);

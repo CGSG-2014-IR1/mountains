@@ -29,7 +29,7 @@
  */
 tcg::unit_road::unit_road( anim *Ani ) :
   unit(Ani), Ani(Ani), Mountain(Ani), Road(Ani), Village(Ani), IsLandscape(FALSE), FirstPoint(TRUE),
-  Plane(vec(1 - 4, 0, 1 - 4), vec(0, 0, 58 + 8), vec(58 + 8, 0, 0)), EditMode(EDIT_TRIANGLES), ScaleY(0.00001)
+  Plane(vec(1 - 4, 0, 1 - 4), vec(0, 0, 58 + 8), vec(58 + 8, 0, 0)), EditMode(EDIT_TRIANGLES), ScaleY(1)
 {
   Houses.push_back(std::vector<INT>());
 
@@ -202,25 +202,25 @@ VOID tcg::unit_road::Response( VOID )
 
   if (IsLandscape)
   {
-    //if (ScaleY == 0.0001)
-    //  ScaleY += 0.0001;
-    //else
-    //  ScaleY = COM_MIN(ScaleY + Ani->DeltaTime / 6, 1);
-    //if (Angle < 60)
-    //  if (Angle == 0)
-    //    Angle += 0.0001;
-    //  else
-    //  {
-    //    Angle += Ani->DeltaTime * 10;
-    //    Ani->Camera.SetLookAtLocUp(LookAt + vec(0, cos(tsg::Deg2Rad(Angle)) * Dist, sin(tsg::Deg2Rad(Angle)) * Dist),
-    //                               LookAt, vec(0.0, 1.0, 0.0));
-    //  }
-    if (Angle == 0)
-    {
-      Angle += 5;
-      Ani->Camera.SetLookAtLocUp(LookAt + vec(0, cos(tsg::Deg2Rad(Angle)) * Dist, sin(tsg::Deg2Rad(Angle)) * Dist),
-        LookAt, vec(0.0, 1.0, 0.0));
-    }
+    if (ScaleY == 0.0001)
+      ScaleY += 0.0001;
+    else
+      ScaleY = COM_MIN(ScaleY + Ani->DeltaTime / 6, 1);
+    if (Angle < 60)
+      if (Angle == 0)
+        Angle += 0.0001;
+      else
+      {
+        Angle += Ani->DeltaTime * 10;
+        Ani->Camera.SetLookAtLocUp(LookAt + vec(0, cos(tsg::Deg2Rad(Angle)) * Dist, sin(tsg::Deg2Rad(Angle)) * Dist),
+                                   LookAt, vec(0.0, 1.0, 0.0));
+      }
+    //if (Angle == 0)
+    //{
+    //  Angle += 5;
+    //  Ani->Camera.SetLookAtLocUp(LookAt + vec(0, cos(tsg::Deg2Rad(Angle)) * Dist, sin(tsg::Deg2Rad(Angle)) * Dist),
+    //    LookAt, vec(0.0, 1.0, 0.0));
+    //}
     if (Ani->Keys[VK_UP])
       Ani->Camera.SetLookAtLocUp(Ani->Camera.Loc + vec(0, Ani->DeltaTime * 20, 0),
                                  cd::plane(vec(0, 0, 0),
