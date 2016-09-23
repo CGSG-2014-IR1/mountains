@@ -87,7 +87,8 @@
     <ClCompile Include="anim\animation.cpp" />
     <ClCompile Include="anim\input.cpp" />
     <ClCompile Include="anim\render\primitive.cpp" />
-    <ClCompile Include="anim\render\prim\primitive_trimesh.cpp" />
+    <ClCompile Include="anim\render\prim\patch3.cpp" />
+    <ClCompile Include="anim\render\prim\trimesh.cpp" />
     <ClCompile Include="anim\render\render.cpp" />
     <ClCompile Include="anim\render\resource\material.cpp" />
     <ClCompile Include="anim\render\resource\shader.cpp" />
@@ -111,7 +112,8 @@
     <ClInclude Include="anim\animation.h" />
     <ClInclude Include="anim\input.h" />
     <ClInclude Include="anim\render\primitive.h" />
-    <ClInclude Include="anim\render\prim\primitive_samples.h" />
+    <ClInclude Include="anim\render\prim\patch3.h" />
+    <ClInclude Include="anim\render\prim\trimesh.h" />
     <ClInclude Include="anim\render\render.h" />
     <ClInclude Include="anim\render\resource\material.h" />
     <ClInclude Include="anim\render\resource\shader.h" />

@@ -20,7 +20,8 @@
 #include "../../def.h"
 
 #include "../unit.h"
-#include "../render/prim/primitive_samples.h"
+#include "../render/prim/patch3.h"
+#include "../render/prim/trimesh.h"
 #include "../../math/cd.h"
 
 /* Computational geometry project namespace */
@@ -44,7 +45,7 @@ namespace tcg
      *       const std::vector<math::triangle> &IDs;
      * RETURNS: None.
      */
-    VOID CreateMountain( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points,
+    VOID CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
       const std::vector<math::triangle> &Triangles, const std::vector<INT> &IDs );
 
     /* Create mountain function.
@@ -61,7 +62,7 @@ namespace tcg
      *       const std::vector<math::triangle> &P0, &P1, &H0, &H1;
      * RETURNS: None.
      */
-    VOID CreateMountain( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points,
+    VOID CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
       const std::vector<math::triangle> &Triangles, const std::vector<INT> &IDs,
       const std::vector<INT> &P0, const std::vector<INT> &P1, const std::vector<INT> &H0, const std::vector<INT> &H1 );
 
@@ -102,7 +103,7 @@ namespace tcg
      *       const std::vector<INT> &Heights;
      * RETURNS: None.
      */
-    VOID CreateVillage( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points,
+    VOID CreateVillage( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
       const std::vector<math::triangle> &Triangles, const std::vector<math::triangle> &IDs,
       const std::vector<tsg::TVec<uv>> &TextureCoords, const std::vector<INT> &Heights );
 
@@ -253,7 +254,7 @@ namespace tcg
 
     std::vector<vec> Points;
     std::vector<triangle> Triangles;
-    primitive::trimesh Mountain;
+    primitive::patch3 Mountain;
 
     BOOL FirstPoint;
     vec PrevPoint;
@@ -262,7 +263,7 @@ namespace tcg
     primitive::trimesh Road;
 
     std::vector<std::vector<INT>> Houses;
-    primitive::trimesh Village;
+    primitive::patch3 Village;
 
     cd::plane_finite Plane;
 

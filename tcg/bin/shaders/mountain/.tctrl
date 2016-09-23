@@ -1,0 +1,64 @@
+#version 420
+
+layout (vertices = 3) out;
+
+const float TessFactor = 80;
+
+in vec2 Tex[];
+out vec2 TexCoords[];
+in int Id[];
+out int InId[];
+
+in vec2 P0[];
+in vec2 P1[];
+in vec2 H0[];
+in vec2 H1[];
+
+out vec2 InP0[];
+out vec2 InP1[];
+out vec2 InH0[];
+out vec2 InH1[];
+
+uniform mat4 MatrWVP;
+
+float saturate( float x )
+{
+  return max(-1, min(1, x));
+}
+
+float CalcFactor( vec4 p0, vec4 p1 )
+{
+  vec4 pp0 = MatrWVP * p0, pp1 = MatrWVP * p1;
+  /*
+  pp0.x = saturate(pp0.x);
+  pp0.y = saturate(pp0.y);
+  pp1.x = saturate(pp0.x);
+  pp1.y = saturate(pp1.y);
+  */
+
+  if (pp0.z <= -2.0 && pp1.z <= -2.0)
+    return 0;
+  float d = distance(pp0.xyz / pp0.w, pp1.xyz / pp1.w);
+
+  return d * TessFactor;
+}
+
+void main( void )
+{
+  gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+  TexCoords[gl_InvocationID] = Tex[gl_InvocationID];
+  InId[gl_InvocationID] = Id[gl_InvocationID];
+  
+  InP0[gl_InvocationID] = P0[gl_InvocationID];
+  InP1[gl_InvocationID] = P1[gl_InvocationID];
+  InH0[gl_InvocationID] = H0[gl_InvocationID];
+  InH1[gl_InvocationID] = H1[gl_InvocationID];
+  
+  barrier();
+
+  gl_TessLevelOuter[2] = max(1, CalcFactor(gl_out[0].gl_Position, gl_out[1].gl_Position) * step(Id[0] * Id[1], 0));  
+  gl_TessLevelOuter[0] = max(1, CalcFactor(gl_out[1].gl_Position, gl_out[2].gl_Position) * step(Id[1] * Id[2], 0));
+  gl_TessLevelOuter[1] = max(1, CalcFactor(gl_out[2].gl_Position, gl_out[0].gl_Position) * step(Id[2] * Id[0], 0));
+
+  gl_TessLevelInner[0] = (gl_TessLevelOuter[0] + gl_TessLevelOuter[1] + gl_TessLevelOuter[2]) / 3.0;
+}

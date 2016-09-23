@@ -12,40 +12,23 @@ layout(location = 8) in vec2 InH0;
 layout(location = 9) in vec2 InH1;
 
 uniform sampler2D TextureHeight;
-
-uniform mat4 MatrWVP;
-uniform mat4 MatrNWorld;
-
 uniform float Height;
 
-out vec2 texCoord;
-out float id;
+out vec2 Tex;
+out int Id;
+
+out vec2 P0;
+out vec2 P1;
+out vec2 H0;
+out vec2 H1;
 
 void main( void )
 {
-  if (InID == 0)
-    gl_Position = MatrWVP *
-      vec4(InPosition.x, texture2D(TextureHeight, vec2(InPosition.x / 60, InPosition.z / 60)).a * Height, InPosition.z, 1);
-  else
-  {
-    if (length(vec2(InPosition.x, InPosition.z) - InP1) == 0)
-    {
-      float h1 = texture2D(TextureHeight, InH1).a * Height;
-      if (h1 > 1.5)
-        h1 *= 0.95;
-      gl_Position = MatrWVP * vec4(InPosition.x, h1, InPosition.z, 1);
-    }
-    else
-    {
-      float h0 = texture2D(TextureHeight, InH0).a * Height, h1 = texture2D(TextureHeight, InH1).a * Height;
-      if (h0 > 1.5)
-        h0 *= 0.95;
-      if (h1 > 1.5)
-        h1 *= 0.95;
-      float alpha = length(vec2(InPosition.x, InPosition.z) - InP0) / length(vec2(InPosition.x, InPosition.z) - InP1);
-      gl_Position = MatrWVP * vec4(InPosition.x, (h0 + alpha * h1) / (1.0 + alpha), InPosition.z, 1);
-    }
-  }
-  texCoord = vec2(InPosition.x / 60, InPosition.z / 60);
-  id = float(InID);
+  Id = InID;
+  P0 = InP0;
+  P1 = InP1;
+  H0 = InH0;
+  H1 = InH1;
+  Tex = vec2(InPosition.x / 60, InPosition.z / 60);
+  gl_Position = vec4(InPosition, 1);
 }

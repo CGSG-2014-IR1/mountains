@@ -3,7 +3,7 @@
  *    Computer Graphics Support Group of 30 Phys-Math Lyceum
  ***************************************************************/
 
-/* FILE NAME   : primitive_trimesh.cpp
+/* FILE NAME   : trimesh.cpp
  * PURPOSE     : Computational geometry project.
  *               Primitive trimesh module.
  * PROGRAMMER  : MM5.
@@ -16,7 +16,7 @@
 
 #include "../../animation.h"
 
-#include "primitive_samples.h"
+#include "trimesh.h"
 
 /* Class constructor.
  * ARGUMENTS:
@@ -34,4 +34,4 @@ tcg::primitive::trimesh::~trimesh( VOID )
 {
 } /* End of 'tcg::primitive::trimesh::~trimesh' function */
 
-/* END OF 'primitive_trimesh' FILE */
+/* END OF 'trimesh' FILE */

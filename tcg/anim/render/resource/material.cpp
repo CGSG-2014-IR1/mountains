@@ -73,7 +73,7 @@ VOID tcg::material::Apply( anim *Ani )
     glUniformMatrix4fv(loc, 1, FALSE, (FLT *)MatrWVP);
   loc = glGetUniformLocation(Shader->Program, "MatrWorld");
   if (loc != -1)
-    glUniformMatrix4fv(loc, 1, FALSE, (FLT *)Ani->World);  
+    glUniformMatrix4fv(loc, 1, FALSE, (FLT *)Ani->World);
   loc = glGetUniformLocation(Shader->Program, "MatrView");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, (FLT *)Ani->Camera.Matr.M);

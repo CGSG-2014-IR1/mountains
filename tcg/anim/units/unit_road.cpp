@@ -34,7 +34,7 @@
  *       const std::vector<math::triangle> &IDs;
  * RETURNS: None.
  */
-VOID tcg::unit_road::CreateMountain( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points,
+VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
         const std::vector<math::triangle> &Triangles, const std::vector<INT> &IDs )
 {
   Tri.DeleteBuffers();
@@ -79,7 +79,7 @@ VOID tcg::unit_road::CreateMountain( tcg::primitive::trimesh &Tri, anim *Ani, co
  *       const std::vector<math::triangle> &P0, &P1, &H0, &H1;
  * RETURNS: None.
  */
-VOID tcg::unit_road::CreateMountain( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points,
+VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
   const std::vector<math::triangle> &Triangles, const std::vector<INT> &IDs,
   const std::vector<INT> &P0, const std::vector<INT> &P1, const std::vector<INT> &H0, const std::vector<INT> &H1 )
 {
@@ -209,7 +209,7 @@ VOID tcg::unit_road::CreateRoad( tcg::primitive::trimesh &Tri, anim *Ani, const 
  *       const std::vector<INT> &Heights;
  * RETURNS: None.
  */
-VOID tcg::unit_road::CreateVillage( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points,
+VOID tcg::unit_road::CreateVillage( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
   const std::vector<math::triangle> &Triangles, const std::vector<math::triangle> &IDs,
   const std::vector<tsg::TVec<uv>> &TextureCoords, const std::vector<INT> &Heights )
 {

@@ -3,7 +3,7 @@
  *    Computer Graphics Support Group of 30 Phys-Math Lyceum
  ***************************************************************/
 
-/* FILE NAME   : primitive_samples.h
+/* FILE NAME   : trimesh.h
  * PURPOSE     : Computational geometry project.
  *               Primitive samples declaration module.
  * PROGRAMMER  : MM5.
@@ -14,8 +14,8 @@
  * Computer Graphics Support Group of 30 Phys-Math Lyceum
  */
 
-#ifndef __primitive_samples_h_
-#define __primitive_samples_h_
+#ifndef __trimesh_h_
+#define __trimesh_h_
 
 #include "../../../def.h"
 
@@ -50,6 +50,6 @@ namespace tcg
   } /* end of 'primitive' namespace */
 } /* end of 'tcg' namespace */
 
-#endif /* __primitive_samples_h_ */
+#endif /* __trimesh_h_ */
 
-/* END OF 'primitive_samples.h' FILE */
+/* END OF 'trimesh.h' FILE */

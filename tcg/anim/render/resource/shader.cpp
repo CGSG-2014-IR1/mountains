@@ -57,26 +57,22 @@ VOID tcg::shader::Load( CHAR *FileNamePrefix )
   INT res, i;
   CHAR *txt;
   UINT
-    Shaders[2] = {0},
-    ShTypes[2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-  CHAR *Suff[2] = {"vert", "frag"};
+    Shaders[4] = {0},
+    ShTypes[4] = {GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER,GL_FRAGMENT_SHADER};
+  CHAR *Suff[4] = {"vert", "tctrl", "teval", "frag"};
   BOOL isok = TRUE;
   static CHAR Buf[1000];
 
-  for (i = 0; i < 2; i++)
+  int noofsh = sizeof(Shaders) / sizeof(UINT);
+  for (i = 0; i < noofsh; i++)
   {
     sprintf(Buf, "%s.%s", FileNamePrefix, Suff[i]);
+    if ((txt = LoadText(Buf)) == NULL)
+      continue;
     if ((Shaders[i] = glCreateShader(ShTypes[i])) == 0)
     {
       isok = FALSE;
       SaveLog("Error create shader");
-      break;
-    }
-    if ((txt = LoadText(Buf)) == NULL)
-    {
-      isok = FALSE;
-      SaveLog("Error load file");
-      SaveLog(Buf);
       break;
     }
 
@@ -98,7 +94,7 @@ VOID tcg::shader::Load( CHAR *FileNamePrefix )
       isok = FALSE;
     else
     {
-      for (i = 0; i < 2; i++)
+      for (i = 0; i < noofsh; i++)
         if (Shaders[i] != 0)
           glAttachShader(Program, Shaders[i]);
       glLinkProgram(Program);
@@ -112,7 +108,7 @@ VOID tcg::shader::Load( CHAR *FileNamePrefix )
     }
   if (!isok)
   {
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < noofsh; i++)
       if (Shaders[i] != 0)
       {
         if (Program != 0)
@@ -137,7 +133,7 @@ VOID tcg::shader::SaveLog( CHAR *Text )
 {
   FILE *F;
 
-  if ((F = fopen("{_}SHD{30}.LOG", "a")) != NULL)
+  if ((F = fopen("logs/shader.log", "a")) != NULL)
   {
     fprintf(F, "%s\n", Text);
     fclose(F);
