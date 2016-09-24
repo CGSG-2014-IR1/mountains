@@ -259,6 +259,8 @@ VOID tcg::unit_road::CreateVillage( tcg::primitive::patch3 &Tri, anim *Ani, cons
   delete I;
 } /* End of 'tcg::unit_road::CreateVillage' function */
 
+#include "../../resource.h"
+
 /* Class constructor.
  * ARGUMENTS:
  *   - animation:

@@ -227,10 +227,18 @@
     <ClInclude Include="anim\render\prim\patch3.h">
       <Filter>Source Files\Animation\Render\Primitives</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="support\SOIL\SOIL.lib">
       <Filter>Source Files\Support\SOIL</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tcg.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

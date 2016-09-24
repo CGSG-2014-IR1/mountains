@@ -19,9 +19,14 @@
 
 #include "../def.h"
 
+#include <vector>
+#include <functional>
+
 /* Computational geometry project namespace */
 namespace tcg
 {
+  typedef std::pair<UINT, std::function<void(void)>> callback;
+
   /* Window class name */
   const CHAR MainWndClassName[] = "CGSG'15 Summer Animation System Main Window Class";
 
@@ -40,11 +45,13 @@ namespace tcg
     BOOL IsInit;
 
     /* Window data */
-    HWND hWnd;                // Window handle
-    HINSTANCE hInstance;      // Application instance handle
-    INT Width, Height;        // Window size
-    BOOL IsActive;            // Active flag
-    BOOL IsFullScreen;        // Full screen flag
+    HWND hWnd;                            // Window handle
+    HINSTANCE hInstance;                  // Application instance handle
+    INT Width, Height;                    // Window size
+    BOOL IsActive;                        // Active flag
+    BOOL IsFullScreen;                    // Full screen flag
+    std::vector<callback> MenuCallbacks;  // Winapi menu custom callbacks
+
   public:
     INT MouseWheel;           // Wheel relative rotate counter
 
@@ -58,6 +65,19 @@ namespace tcg
 
     /* Class destructor */
     ~win( VOID );
+
+    /* New menu callback add function.
+     * ARGUMENTS:
+     *   - callback to add:
+     *       const callback &Callback.
+     * RETURNS:
+     *   (win &) self-reference.
+     */
+    win & operator<<( const callback &Callback )
+    {
+      MenuCallbacks.push_back(Callback);
+      return *this;
+    } /* End of 'operator<<' function */
 
     /* Windowed application running function.
      * ARGUMENTS: None.

@@ -17,6 +17,7 @@
 #include <cstdlib>
 
 #include "window.h"
+#include "../resource.h"
 
 /* Class constructor.
  * ARGUMENTS:
@@ -40,7 +41,7 @@ tcg::win::win( HINSTANCE hInst ) :
     GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0);
   wc.hIcon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON,
     GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0);
-  wc.lpszMenuName = NULL;
+  wc.lpszMenuName = (CHAR *)IDR_MENU1;
   wc.hInstance = hInstance;
   wc.lpfnWndProc = WinFunc;
   wc.lpszClassName = MainWndClassName;
@@ -163,6 +164,15 @@ LRESULT CALLBACK tcg::win::WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
         return 0;
       case WM_MOUSEWHEEL:
         Win->OnMouseWheel((INT)(SHORT)LOWORD(lParam), (INT)(SHORT)HIWORD(lParam), (INT)(SHORT)HIWORD(wParam), (UINT)(SHORT)LOWORD(wParam));
+        return 0;
+      case WM_COMMAND:
+        UINT m = LOWORD(wParam);
+        if (m == ID_FILE_EXIT)
+          Win->OnDestroy();
+        else
+          for (auto &i : Win->MenuCallbacks)
+            if (i.first == m)
+              i.second();
         return 0;
       }
       return DefWindowProc(hWnd, Msg, wParam, lParam);

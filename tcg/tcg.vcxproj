@@ -136,6 +136,7 @@
     <ClInclude Include="math\TSG\TSGSTOCK.H" />
     <ClInclude Include="math\TSG\TSGTRANS.H" />
     <ClInclude Include="math\TSG\TSGVECT.H" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="support\hm_gen.h" />
     <ClInclude Include="support\SOIL\image_DXT.h" />
     <ClInclude Include="support\SOIL\image_helper.h" />
@@ -147,6 +148,9 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="support\SOIL\SOIL.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tcg.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

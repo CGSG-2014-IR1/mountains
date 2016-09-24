@@ -62,6 +62,19 @@ namespace tcg
       return *this;
     } /* End of 'operator<<' function */
 
+    /* New menu callback add function.
+     * ARGUMENTS:
+     *   - callback to add:
+     *       const callback &Callback.
+     * RETURNS:
+     *   (anim &) self-reference.
+     */
+    anim & operator<<( const callback &Callback )
+    {
+      win::operator<<(Callback);
+      return *this;
+    } /* End of 'operator<<' function */
+
     /***
      * Virtual functions for window customization
      ***/
