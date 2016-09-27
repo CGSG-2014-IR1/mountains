@@ -15,7 +15,6 @@
  */
 
 #include "unit_hm_preview.h"
-#include "../../math/noise.h"
 
 /* Computational geometry project namespace */
 namespace tcg
@@ -26,36 +25,29 @@ namespace tcg
    *       anim *Ani;
    */
   unit_hm_preview::unit_hm_preview( anim *Ani ) : unit(Ani), Quad(Ani),
-    Interface("Fractal parameters", [this]{Update();})
+    Interface("Fractal parameters", [this]{Update();},
+              [this]{Gen();})
   {
     Quad.CreateQuad(vec(1, 1, 0), vec(-1, 1, 0), vec(-1, -1, 0), vec(1, -1, 0));
     Quad.Material = Ani->AddMaterial("hm_preview", "fbm");
 
     H = 0.4f;
-    lacunarity = 6.01f;
-    octaves = 8;
-    offset = 1.0f;
-    gain = 2.0f;
+    Lacunarity = 6.01f;
+    Octaves = 8;
+    Offset = 1.0f;
+    Gain = 2.0f;
+    FSeed = 30.59;
 
     Update();
 
     Interface.Push("H", &H);
-    Interface.Push("Lacunarity", &lacunarity);
-    Interface.Push("Offset", &offset);
-    Interface.Push("Octaves", &octaves);
-    Interface.Push("Gain", &gain);
+    Interface.Push("Lacunarity", &Lacunarity);
+    Interface.Push("Offset", &Offset);
+    Interface.Push("Octaves", &Octaves);
+    Interface.Push("Gain", &Gain);
+    Interface.Push("Seed (int)", &FSeed);
 
-    math::noise Noise;
-    float *pix = new float[Noise.GetSize() * 2];
-    for (int i = 0; i < Noise.GetSize(); i++)
-    {
-      pix[i] = Noise.GetTable(i);
-      pix[i + Noise.GetSize()] = Noise.GetPerm(i);
-    }
-    Quad.Material->AddTexture(Ani->AddTexture("NoiseTex", Noise.GetSize(), 2, pix));
-    delete[] pix;
-
-    Interface.PopUp();
+    Rend = true;
   } /* End of 'unit_hm_preview::unit_hm_preview' constructor */
 } /* end of 'tcg' namespace */
 

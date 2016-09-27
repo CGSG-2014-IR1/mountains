@@ -16,9 +16,7 @@
 
 #include "anim/animation.h"
 
-#include "anim/units/unit_road.h"
-
-#include "support/hm_gen.h"
+#include "anim/units/unit_hm_preview.h"
 
 using namespace tcg;
 
@@ -38,9 +36,9 @@ using namespace tcg;
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     CHAR *CmdLine, INT CmdShow )
 {
-  //hm_gen();
   anim Ani(hInstance);
-  Ani << new unit_road(&Ani);
+  Ani << new unit_hm_preview(&Ani);
+  //Ani << new unit_road(&Ani);
   Ani.Run();
 
   return 0;

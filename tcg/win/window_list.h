@@ -29,7 +29,7 @@ namespace tcg
   class window_list : private window
   {
   private:
-    callback OnUpdate;  // on update callback
+    callback OnUpdate, OnClose;  // on update callback
   public:
     std::vector<std::pair<std::string, float *>> Value;
 
@@ -38,8 +38,8 @@ namespace tcg
      *   - application instance handle:
      *       HINSTANCE hInst;
      */
-    window_list( const char *ValueName, const callback &OnUpdate ) :
-      OnUpdate(OnUpdate),
+    window_list( const char *ValueName, const callback &OnUpdate, const callback &OnClose ) :
+      OnUpdate(OnUpdate), OnClose(OnClose),
       window(GetModuleHandle(NULL),
         (std::string(ValueName) + "ValueWindowClass").c_str(), ValueName, false, 0, false, 400, 700)
     {
@@ -152,7 +152,7 @@ namespace tcg
      */
     VOID OnDestroy( VOID )
     {
-      OnUpdate();
+      OnClose();
       Hide();
     } /* End of 'tcg::window_list::OnDestroy' function */
   }; /* End of 'win' class */
