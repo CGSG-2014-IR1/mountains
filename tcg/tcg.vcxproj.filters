@@ -120,6 +120,9 @@
     <ClCompile Include="anim\render\prim\patch3.cpp">
       <Filter>Source Files\Animation\Render\Primitives</Filter>
     </ClCompile>
+    <ClCompile Include="anim\units\unit_hm_preview.cpp">
+      <Filter>Source Files\Animation\Units</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">
@@ -229,6 +232,18 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win\window_animation.h">
+      <Filter>Source Files\Windows dependent</Filter>
+    </ClInclude>
+    <ClInclude Include="win\window_value.h">
+      <Filter>Source Files\Windows dependent</Filter>
+    </ClInclude>
+    <ClInclude Include="win\window_list.h">
+      <Filter>Source Files\Windows dependent</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_hm_preview.h">
+      <Filter>Source Files\Animation\Units</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

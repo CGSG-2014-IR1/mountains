@@ -22,7 +22,11 @@
  *       HINSTANCE hInstance;
  */
 tcg::anim::anim( HINSTANCE hInstance ) :
-  win(hInstance), render(win::hWnd, win::Width, win::Height), input(win::hWnd, win::Width, win::Height)
+  window_animation(hInstance),
+  render(window_animation::hWnd,
+         window_animation::Width,
+         window_animation::Height),
+  input(window_animation::hWnd, window_animation::Width, window_animation::Height)
 {
 } /* End of 'tcg::anim::anim' function */
 
@@ -43,7 +47,7 @@ VOID tcg::anim::Render( VOID )
 
   /* Update input system */
   input::Response(IsActive);
-  input::Scroll(win::MouseWheel);
+  input::Scroll(window_animation::MouseWheel);
 
   /* Responce all units */
   unit_manager::Response();

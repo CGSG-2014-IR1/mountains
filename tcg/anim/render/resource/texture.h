@@ -180,6 +180,57 @@ namespace tcg
       strcpy(this->Name, Name);
     } /* End of 'texture' function */
 
+	/* Texture constructor.
+	 * ARGUMENTS:
+	 *   - texture name:
+	 *       CHAR *Name;
+	 *   - texture dimensions:
+	 *       INT W, H;
+	 *   - texture pixels:
+     *       FLOAT *Data.
+     */
+    texture( CHAR *Name, INT W, INT H, FLOAT *Data )
+    {
+      glGenTextures(1, &TexNo);
+      glBindTexture(GL_TEXTURE_2D, TexNo);
+
+      strcpy(this->Name, Name);
+
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI,
+                   W, H, 0, GL_ALPHA, GL_FLOAT, Data);
+      glGenerateMipmap(GL_TEXTURE_2D);
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+    } /* End of 'texture' function */
+
+    /* Texture data update function.
+	 * ARGUMENTS:
+	 *   - new dimensions:
+	 *       INT W, H;
+	 *   - new pixels:
+     *       FLOAT *Data.
+     */
+    void Update( INT W, INT H, FLOAT *Data )
+    {
+      glBindTexture(GL_TEXTURE_2D, TexNo);
+
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI,
+                   W, H, 0, GL_ALPHA, GL_FLOAT, Data);
+      glGenerateMipmap(GL_TEXTURE_2D);
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+    } /* End of 'Update' function */
+
     /* Texture destructor.
      * ARGUMENTS: None.
      */
@@ -232,6 +283,17 @@ namespace tcg
      *   (texture *) pointer to added texture.
      */
     texture * AddTexture( CHAR *Name, CHAR *FileName );
+
+    /* Add texture function.
+	 * ARGUMENTS:
+	 *   - texture name:
+	 *       CHAR *Name;
+	 *   - texture dimensions:
+	 *       INT W, H;
+	 *   - texture pixels:
+     *       FLOAT *Data.
+     */
+    texture * AddTexture( CHAR *Name, INT W, INT H, FLOAT *Data );
 
     /* Get texture function.
      * ARGUMENTS:

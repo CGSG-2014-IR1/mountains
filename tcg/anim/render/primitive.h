@@ -59,7 +59,23 @@ namespace tcg
     uv Height;
     INT ID;
     uv P0, P1, H0, H1;
-  }; /* End of 'uv' struct */
+
+    /* Default constructor.
+     * ARGUMENTS: None.
+     */
+    vertex( VOID )
+    {
+    } /* End of 'vertex' constructor */
+
+    /* Position-filling constructor.
+     * ARGUMENTS:
+     *   - const vecf &Pos:
+     *       vertex postion.
+     */
+    vertex( const vecf &Pos ) : Pos(Pos)
+    {
+    } /* End of 'vertex' constructor */
+  }; /* End of 'vertex' struct */
 
   /* Primitive class */
   class prim

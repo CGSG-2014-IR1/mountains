@@ -25,16 +25,16 @@
  * RETURNS:
  *   (BOOL) TRUE to continue creation window, FALSE to terminate.
  */
-BOOL tcg::win::OnCreate( CREATESTRUCT *CS )
+BOOL tcg::window::OnCreate( CREATESTRUCT *CS )
 {
   return TRUE;
-} /* End of 'tcg::win::OnCreate' function */
+} /* End of 'tcg::window::OnCreate' function */
 
 /* WM_DESTROY window message handle function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-VOID tcg::win::OnDestroy( VOID )
+VOID tcg::window::OnDestroy( VOID )
 {
   /* Call user level deinitialization */
   if (IsInit)
@@ -43,8 +43,7 @@ VOID tcg::win::OnDestroy( VOID )
     Close();
     KillTimer(hWnd, 30);
   }
-  PostQuitMessage(0);
-} /* End of 'tcg::win::OnDestroy' function */
+} /* End of 'tcg::window::OnDestroy' function */
 
 /* WM_SIZE window message handle function.
  * ARGUMENTS:
@@ -54,14 +53,14 @@ VOID tcg::win::OnDestroy( VOID )
  *       INT W, H;
  * RETURNS: None.
  */
-VOID tcg::win::OnSize( UINT State, INT W, INT H )
+VOID tcg::window::OnSize( UINT State, INT W, INT H )
 {
   Width = W;
   Height = H;
   /* Call user level change size notifivcation */
   if (IsInit)
     Resize();
-} /* End of 'tcg::win::OnSize' function */
+} /* End of 'tcg::window::OnSize' function */
 
 /* WM_ERASEBKGND window message handle function.
  * ARGUMENTS:
@@ -70,19 +69,19 @@ VOID tcg::win::OnSize( UINT State, INT W, INT H )
  * RETURNS:
  *   (BOOL) TRUE if background is erased, FALSE otherwise.
  */
-BOOL tcg::win::OnEraseBkgnd( HDC hDC )
+BOOL tcg::window::OnEraseBkgnd( HDC hDC )
 {
   /* Call user level erase background function */
   if (IsInit)
     Erase(hDC);
   return FALSE;
-} /* End of 'tcg::win::OnEraseBkgnd' function */
+} /* End of 'tcg::window::OnEraseBkgnd' function */
 
 /* WM_PAINT window message handle function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-VOID tcg::win::OnPaint( VOID )
+VOID tcg::window::OnPaint( VOID )
 {
   HDC hDC;
   PAINTSTRUCT ps;
@@ -92,7 +91,7 @@ VOID tcg::win::OnPaint( VOID )
   if (IsInit)
     Paint(hDC);
   EndPaint(hWnd, &ps); 
-} /* End of 'tcg::win::OnPaint' function */
+} /* End of 'tcg::window::OnPaint' function */
 
 /* WM_ACTIVATE window message handle function.
  * ARGUMENTS:
@@ -104,14 +103,24 @@ VOID tcg::win::OnPaint( VOID )
  *       BOOL IsMinimized;
  * RETURNS: None.
  */
-VOID tcg::win::OnActivate( UINT Reason, HWND hWndActDeact, BOOL IsMinimized )
+VOID tcg::window::OnActivate( UINT Reason, HWND hWndActDeact, BOOL IsMinimized )
 {
   IsActive = Reason == WA_CLICKACTIVE || Reason == WA_ACTIVE;
 
   /* Call user level activate handle function */
   if (IsInit)
     Activate(IsActive);
-} /* End of 'tcg::win::OnActivate' function */
+} /* End of 'tcg::window::OnActivate' function */
+
+/* WM_KEYDOWN window message handle function.
+ * ARGUMENTS:
+ *   - pressed key:
+ *       UINT Keys;
+ * RETURNS: None.
+ */
+VOID tcg::window::OnKeyDown( UINT Keys )
+{
+} /* End of 'tcg::window::OnKeyDown' function */
 
 /* WM_TIMER window message handle function.
  * ARGUMENTS:
@@ -119,9 +128,15 @@ VOID tcg::win::OnActivate( UINT Reason, HWND hWndActDeact, BOOL IsMinimized )
  *       INT Id;
  * RETURNS: None.
  */
-VOID tcg::win::OnTimer( INT Id )
+VOID tcg::window::OnTimer( INT Id )
 {
-  if (Id == InitializationTimer)
+  /* Call user level timer handle function */
+  if (IsInit)
+    if (Id != InitializationTimer)
+      Timer();
+    else
+      InvalidateRect(hWnd, NULL, TRUE);
+  else
   {
     IsInit = TRUE;
     Init();
@@ -129,13 +144,8 @@ VOID tcg::win::OnTimer( INT Id )
     InvalidateRect(hWnd, NULL, TRUE);
     if (IsActive)
       Activate(TRUE);
-    SetTimer(hWnd, 30, 1, NULL);
   }
-  else
-    /* Call user level timer handle function */
-    if (IsInit)
-      Timer();
-} /* End of 'tcg::win::OnTimer' function */
+} /* End of 'tcg::window::OnTimer' function */
 
 /* WM_*BUTTONDOWN window message handle function.
  * ARGUMENTS:
@@ -147,10 +157,10 @@ VOID tcg::win::OnTimer( INT Id )
  *       UINT Keys;
  * RETURNS: None.
  */
-VOID tcg::win::OnButtonDown( BOOL IsDoubleClick, INT X, INT Y, UINT Keys )
+VOID tcg::window::OnButtonDown( BOOL IsDoubleClick, INT X, INT Y, UINT Keys )
 {
   SetCapture(hWnd);
-} /* End of 'tcg::win::OnButtonDown' function */
+} /* End of 'tcg::window::OnButtonDown' function */
 
 /* WM_*BUTTONUP window message handle function.
  * ARGUMENTS:
@@ -160,10 +170,10 @@ VOID tcg::win::OnButtonDown( BOOL IsDoubleClick, INT X, INT Y, UINT Keys )
  *       UINT Keys;
  * RETURNS: None.
  */
-VOID tcg::win::OnButtonUp( INT X, INT Y, UINT Keys )
+VOID tcg::window::OnButtonUp( INT X, INT Y, UINT Keys )
 {
   ReleaseCapture();
-} /* End of 'tcg::win::OnButtonUp' function */
+} /* End of 'tcg::window::OnButtonUp' function */
 
 /* WM_MOUSEWHEEL window message handle function.
  * ARGUMENTS:
@@ -175,9 +185,9 @@ VOID tcg::win::OnButtonUp( INT X, INT Y, UINT Keys )
  *       UINT Keys;
  * RETURNS: None.
  */
-VOID tcg::win::OnMouseWheel( INT X, INT Y, INT Z, UINT Keys )
+VOID tcg::window::OnMouseWheel( INT X, INT Y, INT Z, UINT Keys )
 {
   MouseWheel += Z;
-} /* End of 'tcg::win::OnButtonUp' function */
+} /* End of 'tcg::window::OnButtonUp' function */
 
 /* END OF 'WINMSG.CPP' FILE */

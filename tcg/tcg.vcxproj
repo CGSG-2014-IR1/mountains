@@ -94,6 +94,7 @@
     <ClCompile Include="anim\render\resource\shader.cpp" />
     <ClCompile Include="anim\render\resource\texture.cpp" />
     <ClCompile Include="anim\unit.cpp" />
+    <ClCompile Include="anim\units\unit_hm_preview.cpp" />
     <ClCompile Include="anim\units\unit_road.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\cd.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="anim\render\resource\texture.h" />
     <ClInclude Include="anim\timer.h" />
     <ClInclude Include="anim\unit.h" />
+    <ClInclude Include="anim\units\unit_hm_preview.h" />
     <ClInclude Include="anim\units\unit_road.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="math\cd.h" />
@@ -145,6 +147,9 @@
     <ClInclude Include="support\SOIL\stbi_DDS_aug_c.h" />
     <ClInclude Include="support\SOIL\stb_image_aug.h" />
     <ClInclude Include="win\window.h" />
+    <ClInclude Include="win\window_animation.h" />
+    <ClInclude Include="win\window_list.h" />
+    <ClInclude Include="win\window_value.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="support\SOIL\SOIL.lib" />

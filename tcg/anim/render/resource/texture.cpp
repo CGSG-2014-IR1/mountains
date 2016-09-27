@@ -53,6 +53,30 @@ tcg::texture * tcg::texture_manager::AddTexture( CHAR *Name, CHAR *FileName )
   return Textures.back();
 } /* End of 'tcg::texture_manager::AddTexture' function */
 
+/* Add texture function.
+ * ARGUMENTS:
+ *   - texture name:
+ *       CHAR *Name;
+ *   - texture dimensions:
+ *       INT W, H;
+ *   - texture pixels:
+ *       FLOAT *Data.
+ * RETURNS:
+ *   (texture *) pointer to added texture.
+ */
+tcg::texture * tcg::texture_manager::AddTexture( CHAR *Name, INT W, INT H, FLOAT *Data )
+{
+  for (INT i = 0; i < Textures.size(); i++)
+    if (!strcmp(Name,Textures[i]->Name))
+    {
+      Textures[i]->Update(W, H, Data);
+      return Textures[i];
+    }
+
+  Textures.push_back(new texture(Name, W, H, Data));
+  return Textures.back();
+} /* End of 'tcg::texture_manager::AddTexture' function */
+
 /* Get texture function.
  * ARGUMENTS:
  *   - texture name:

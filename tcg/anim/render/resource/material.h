@@ -19,7 +19,7 @@
 
 #include "../../../def.h"
 
-#include <vector>
+#include <map>
 
 #include "../render.h"
 
@@ -41,9 +41,9 @@ namespace tcg
     std::vector<texture *> Textures;
 
     /* Uniforms */
-    std::vector<std::pair<std::string, FLOAT>> UnifFloat;
-    std::vector<std::pair<std::string, INT>> UnifInt;
-    std::vector<std::pair<std::string, matr>> UnifMatr;
+    std::map<std::string, FLOAT> UnifFloat;
+    std::map<std::string, INT> UnifInt;
+    std::map<std::string, matr> UnifMatr;
 
   public:
     /* Class constructor.
@@ -91,7 +91,7 @@ namespace tcg
      *       float Val.
      * RETURNS: None.
      */
-    VOID AddUniform( const char *Name, float Val );
+    VOID SetUniform( const char *Name, float Val );
 
     /* Integer uniform add function.
      * ARGUMENTS:
@@ -101,7 +101,7 @@ namespace tcg
      *       int Val.
      * RETURNS: None.
      */
-    VOID AddUniform( const char *Name, int Val );
+    VOID SetUniform( const char *Name, int Val );
 
     /* Matrix uniform add function.
      * ARGUMENTS:
@@ -111,7 +111,7 @@ namespace tcg
      *       const matr &Val.
      * RETURNS: None.
      */
-    VOID AddUniform( const char *Name, const matr &Val );
+    VOID SetUniform( const char *Name, const matr &Val );
   }; /* End of 'material' class */
 
   /* Material manager class */

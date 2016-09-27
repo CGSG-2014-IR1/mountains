@@ -57,7 +57,7 @@ VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, con
   Tri.SetBuffers(V, I, Points.size(), Triangles.size() * 3);
 
   Tri.Material = Ani->AddMaterial("mountain", "mountain");
-  Tri.Material->AddUniform("Height", 4.0f);
+  Tri.Material->SetUniform("Height", 4.0f);
   Tri.Material->AddTexture(Ani->AddTexture("TextureHeight", "heightmap1.float"));
   Tri.Material->AddTexture(Ani->AddTexture("Texture", "mountain_light.jpg"));
 
@@ -185,7 +185,7 @@ VOID tcg::unit_road::CreateRoad( tcg::primitive::trimesh &Tri, anim *Ani, const 
 
   Tri.Material = Ani->AddMaterial("road", "road");
   Tri.Material->AddTexture(Ani->AddTexture("road", "road.jpg"));
-  Tri.Material->AddUniform("Height", 4.0f);
+  Tri.Material->SetUniform("Height", 4.0f);
   Tri.Material->AddTexture(Ani->AddTexture("TextureHeight", "heightmap1.float"));
   Tri.Material->AddTexture(Ani->AddTexture("light", "mountain_light.jpg"));
 

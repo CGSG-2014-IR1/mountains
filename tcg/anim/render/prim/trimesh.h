@@ -46,6 +46,20 @@ namespace tcg
        * ARGUMENTS: None.
        */
       ~trimesh( VOID );
+
+      /* Quad create function.
+       * ARGUMENTS:
+       *   - quad vertexes:
+       *       const vec &P0, &P1, &P2, &P3.
+       * RETURNS: None.
+       */
+      VOID CreateQuad( const vec &P0, const vec &P1, const vec &P2, const vec &P3 )
+      {
+        DeleteBuffers();
+        vertex v[4] = { P0, P1, P2, P3 };
+        INT i[6] = { 0, 1, 2, 0, 2, 3 };
+        SetBuffers(v, i, 4, 6);
+      } /* End of 'CreateQuad' function */
     }; /* End of 'trimesh' class */
   } /* end of 'primitive' namespace */
 } /* end of 'tcg' namespace */

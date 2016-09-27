@@ -183,10 +183,10 @@ tcg::material * tcg::material_manager::GetMaterial( CHAR *Name )
  *       float Val.
  * RETURNS: None.
  */
-VOID tcg::material::AddUniform( const char *Name, float Val )
+VOID tcg::material::SetUniform( const char *Name, float Val )
 {
-  UnifFloat.push_back(std::pair<std::string, float>(Name, Val));
-} /* End of 'tcg::material::AddUniform function */
+  UnifFloat[std::string(Name)] = Val;
+} /* End of 'tcg::material::SetUniform function */
 
 /* Integer uniform add function.
  * ARGUMENTS:
@@ -196,10 +196,10 @@ VOID tcg::material::AddUniform( const char *Name, float Val )
  *       int Val.
  * RETURNS: None.
  */
-VOID tcg::material::AddUniform( const char *Name, int Val )
+VOID tcg::material::SetUniform( const char *Name, int Val )
 {
-  UnifInt.push_back(std::pair<std::string, int>(Name, Val));
-} /* End of 'tcg::material::AddUniform function */
+  UnifInt[std::string(Name)] = Val;
+} /* End of 'tcg::material::SetUniform function */
 
 /* Matrix uniform add function.
  * ARGUMENTS:
@@ -209,9 +209,9 @@ VOID tcg::material::AddUniform( const char *Name, int Val )
  *       const matr &Val.
  * RETURNS: None.
  */
-VOID tcg::material::AddUniform( const char *Name, const matr &Val )
+VOID tcg::material::SetUniform( const char *Name, const matr &Val )
 {
-  UnifMatr.push_back(std::pair<std::string, matr>(Name, Val));
-} /* End of 'tcg::material::AddUniform function */
+  UnifMatr[std::string(Name)] = Val;
+} /* End of 'tcg::material::SetUniform function */
 
 /* END OF 'material.cpp' FILE */

@@ -3,11 +3,10 @@
  *    Computer Graphics Support Group of 30 Phys-Math Lyceum
  ***************************************************************/
 
-/* FILE NAME   : window.cpp
+/* FILE NAME   : WIN.CPP
  * PURPOSE     : Simple animation system.
  *               Window class implementation module.
- * PROGRAMMER  : MM5,
- *               IR1.
+ * PROGRAMMER  : MM5.
  * LAST UPDATE : 23.07.2016.
  * NOTE        : Namespace 'tcg'.
  *
@@ -24,26 +23,10 @@
  * ARGUMENTS:
  *   - application instance handle:
  *       HINSTANCE hInst;
- *   - window class name:
- *       const char *ClassName = "MyWindowClass";
- *   - window caption:
- *       const char *Caption = "Window";
- *   - flag if window should have built-in controls:
- *       bool Control = true;
- *   - window menu ID:
- *       UINT Menu = 0;
- *   - flag if window shoukd be visible on start:
- *       bool Show = false;
- *   - window sizes:
- *       int W = CW_USEDEFAULT, H = CW_USEDEFAULT
  */
-tcg::window::window( HINSTANCE hInst, const char *ClassName,
-                     const char *Caption,
-                     bool Control,
-                     UINT Menu, bool Show,
-                     int W, int H ) :
+tcg::win::win( HINSTANCE hInst ) :
     IsInit(FALSE), hWnd(NULL), hInstance(hInst),
-    Width(0), Height(0), IsActive(Show), IsFullScreen(FALSE),
+    Width(0), Height(0), IsActive(FALSE), IsFullScreen(FALSE),
     MouseWheel(0)
 {
   /* Fill and register window class */
@@ -58,10 +41,10 @@ tcg::window::window( HINSTANCE hInst, const char *ClassName,
     GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0);
   wc.hIcon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON,
     GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0);
-  wc.lpszMenuName = (CHAR *)Menu;
+  wc.lpszMenuName = (CHAR *)IDR_MENU1;
   wc.hInstance = hInstance;
   wc.lpfnWndProc = WinFunc;
-  wc.lpszClassName = ClassName;
+  wc.lpszClassName = MainWndClassName;
   if (!RegisterClassEx(&wc))
   {
     MessageBox(NULL, "Error register window class", "ERROR",
@@ -70,10 +53,11 @@ tcg::window::window( HINSTANCE hInst, const char *ClassName,
   }
 
   /* Window creation */
-  hWnd = CreateWindow(ClassName,
-    Caption,
-    Control ? WS_OVERLAPPEDWINDOW : WS_OVERLAPPED,
-    CW_USEDEFAULT, CW_USEDEFAULT, W, H,
+  hWnd = CreateWindow(MainWndClassName,
+    "Landscape Construction",
+    WS_OVERLAPPEDWINDOW,
+    CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+    //1920, 0, 1000, 700,
     NULL, NULL, hInstance, (VOID *)this);
   if (hWnd == NULL)
   {
@@ -82,20 +66,24 @@ tcg::window::window( HINSTANCE hInst, const char *ClassName,
     exit(0);
   }
   /* Show and update window */
-  if (Show)
-    ShowWindow(hWnd, SW_SHOWNORMAL);
+  ShowWindow(hWnd, SW_SHOWNORMAL);
   UpdateWindow(hWnd);
 
   /* Send initialization timer message */
   PostMessage(hWnd, WM_TIMER, (WPARAM)InitializationTimer, 0);
-} /* End of 'tcg::window::window' function */
+} /* End of 'tcg::win::win' function */
+
+/* Class destructor */
+tcg::win::~win( VOID )
+{
+} /* End of 'tcg::win::~win' function */
 
 /* Windowed application running function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (INT) Error level for operation system (0 for success).
  */
-INT tcg::window::Run( VOID )
+INT tcg::win::Run( VOID )
 {
   MSG msg;
 
@@ -114,7 +102,7 @@ INT tcg::window::Run( VOID )
         Idle();
   }
   return msg.wParam;
-} /* End of 'tcg::window::Run' function */
+} /* End of 'tcg::win::Run' function */
 
 /* Window message handle function (CALLBACK version).
  *   - window handle:
@@ -128,9 +116,9 @@ INT tcg::window::Run( VOID )
  * RETURNS:
  *   (LRESULT) message return code (depended to Msg type).
  */
-LRESULT CALLBACK tcg::window::WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK tcg::win::WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
 {
-  window *Win;
+  win *Win;
 
   switch (Msg)
   {
@@ -138,16 +126,15 @@ LRESULT CALLBACK tcg::window::WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARA
     /* Attach 'this' pointer to window class to window */
     SetWindowLong(hWnd, 0, (LONG)((CREATESTRUCT *)lParam)->lpCreateParams);
     /* Store window handle */
-    ((window *)((CREATESTRUCT *)lParam)->lpCreateParams)->hWnd = hWnd;
+    ((win *)((CREATESTRUCT *)lParam)->lpCreateParams)->hWnd = hWnd;
   default:
-    Win = (window *)GetWindowLong(hWnd, 0);
+    Win = (win *)GetWindowLong(hWnd, 0);
     if (Win != NULL)
     {
       switch (Msg)
       {
       case WM_CREATE:
         return Win->OnCreate((CREATESTRUCT *)lParam) ? 0 : -1;
-      case WM_CLOSE:
       case WM_DESTROY:
         Win->OnDestroy();
         return 0;
@@ -160,17 +147,15 @@ LRESULT CALLBACK tcg::window::WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARA
       case WM_ERASEBKGND:
         return (LRESULT)Win->OnEraseBkgnd((HDC)wParam);
       case WM_PAINT:
-      case WM_TIMER:
         Win->OnPaint();
+        return 0;
+      case WM_TIMER:
         Win->OnTimer((UINT)wParam);
         return 0;
       case WM_LBUTTONDOWN:
       case WM_RBUTTONDOWN:
       case WM_MBUTTONDOWN:
         Win->OnButtonDown(FALSE, (INT)(SHORT)LOWORD(lParam), (INT)(SHORT)HIWORD(lParam), (UINT)(SHORT)LOWORD(wParam));
-        return 0;
-      case WM_KEYDOWN:
-        Win->OnKeyDown(wParam);
         return 0;
       case WM_LBUTTONUP:
       case WM_RBUTTONUP:
@@ -194,16 +179,16 @@ LRESULT CALLBACK tcg::window::WinFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARA
     }
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
-} /* End of 'tcg::window::WinFunc' function */
+} /* End of 'tcg::win::WinFunc' function */
 
 /* System exit function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-VOID tcg::window::DoExit( VOID )
+VOID tcg::win::DoExit( VOID )
 {
   PostMessage(hWnd, WM_CLOSE, 0, 0);
-} /* End of 'tcg::window::DoExit' function */
+} /* End of 'tcg::win::DoExit' function */
 
 /* Enable/disable full screen window mode function.
  * ARGUMENTS:
@@ -211,7 +196,7 @@ VOID tcg::window::DoExit( VOID )
  *       BOOL IsToGoToFullScreen;
  * RETURNS: None.
  */
-VOID tcg::window::SetFullScreen( BOOL IsToGoToFullScreen )
+VOID tcg::win::SetFullScreen( BOOL IsToGoToFullScreen )
 {
   if (!IsFullScreen)
   {
@@ -230,6 +215,12 @@ VOID tcg::window::SetFullScreen( BOOL IsToGoToFullScreen )
     GetMonitorInfo(hmon, (MONITORINFO *)&moninfo);
 
     /* go to full screen mode */
+    /* for single monitor:
+    rc.left = 0;
+    rc.top = 0;
+    rc.right = GetSystemMetrics(SM_CXSCREEN);
+    rc.bottom = GetSystemMetrics(SM_CYSCREEN);
+    */
     rc = moninfo.rcMonitor;
 
     AdjustWindowRect(&rc, GetWindowLong(hWnd, GWL_STYLE), FALSE);
@@ -249,6 +240,6 @@ VOID tcg::window::SetFullScreen( BOOL IsToGoToFullScreen )
       SWP_NOOWNERZORDER);
     IsFullScreen = FALSE;
   }
-} /* End of 'tcg::window::SetFullScreen' function */
+} /* End of 'tcg::win::SetFullScreen' function */
 
-/* END OF 'window.cpp' FILE */
+/* END OF 'WIN.CPP' FILE */

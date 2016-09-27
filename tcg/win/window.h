@@ -3,11 +3,12 @@
  *    Computer Graphics Support Group of 30 Phys-Math Lyceum
  ***************************************************************/
 
-/* FILE NAME   : WIN.H
+/* FILE NAME   : window.h
  * PURPOSE     : Simple animation system.
  *               Window class declaration module.
- * PROGRAMMER  : MM5.
- * LAST UPDATE : 23.08.2016.
+ * PROGRAMMER  : MM5,
+ *               IR1.
+ * LAST UPDATE : 24.09.2016.
  * NOTE        : Namespace 'tcg'.
  *
  * No part of this file may be changed without agreement of
@@ -25,32 +26,29 @@
 /* Computational geometry project namespace */
 namespace tcg
 {
-  typedef std::pair<UINT, std::function<void(void)>> callback;
-
-  /* Window class name */
-  const CHAR MainWndClassName[] = "CGSG'15 Summer Animation System Main Window Class";
+  typedef std::function<void(void)> callback;
 
   /* Main window class declaration */
-  class win
+  class window
   {
   private:
-    /* Initialization timer identifier */
-    static const INT InitializationTimer = 303030;
-
     /* Save rectangle for full screen mode */
     RECT SaveRect;
 
   protected:
+    /* Initialization timer identifier */
+    static const INT InitializationTimer = 303030;
+
     /* Initialization flag */
-    BOOL IsInit;
+    bool IsInit;
 
     /* Window data */
-    HWND hWnd;                            // Window handle
-    HINSTANCE hInstance;                  // Application instance handle
-    INT Width, Height;                    // Window size
-    BOOL IsActive;                        // Active flag
-    BOOL IsFullScreen;                    // Full screen flag
-    std::vector<callback> MenuCallbacks;  // Winapi menu custom callbacks
+    HWND hWnd;                                             // Window handle
+    HINSTANCE hInstance;                                   // Application instance handle
+    INT Width, Height;                                     // Window size
+    bool IsActive;                                         // Active flag
+    bool IsFullScreen;                                     // Full screen flag
+    std::vector<std::pair<UINT, callback>> MenuCallbacks;  // Winapi menu custom callbacks
 
   public:
     INT MouseWheel;           // Wheel relative rotate counter
@@ -60,20 +58,35 @@ namespace tcg
      * ARGUMENTS:
      *   - application instance handle:
      *       HINSTANCE hInst;
+     *   - window class name:
+     *       const char *ClassName = "MyWindowClass";
+     *   - window caption:
+     *       const char *Caption = "Window";
+     *   - flag if window should have built-in controls:
+     *       bool Control = true;
+     *   - window menu ID:
+     *       UINT Menu = 0;
+     *   - flag if window shoukd be visible on start:
+     *       bool Show = false;
+     *   - window sizes:
+     *       int W = CW_USEDEFAULT, H = CW_USEDEFAULT
      */
-    win( HINSTANCE hInst = GetModuleHandle(NULL) );
-
-    /* Class destructor */
-    ~win( VOID );
+    window( HINSTANCE hInst = GetModuleHandle(NULL),
+            const char *ClassName = "MyWindowClass",
+            const char *Caption = "Window",
+            bool Control = true,
+            UINT Menu = 0,
+            bool Show = false,
+            int W = CW_USEDEFAULT, int H = CW_USEDEFAULT );
 
     /* New menu callback add function.
      * ARGUMENTS:
      *   - callback to add:
      *       const callback &Callback.
      * RETURNS:
-     *   (win &) self-reference.
+     *   (window &) self-reference.
      */
-    win & operator<<( const callback &Callback )
+    window & operator<<( const std::pair<UINT, callback> &Callback )
     {
       MenuCallbacks.push_back(Callback);
       return *this;
@@ -131,7 +144,7 @@ namespace tcg
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    VOID OnDestroy( VOID );
+    virtual VOID OnDestroy( VOID );
 
     /* WM_SIZE window message handle function.
      * ARGUMENTS:
@@ -156,7 +169,7 @@ namespace tcg
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    VOID OnPaint( VOID );
+    virtual VOID OnPaint( VOID );
 
     /* WM_ACTIVATE window message handle function.
      * ARGUMENTS:
@@ -188,7 +201,15 @@ namespace tcg
      *       UINT Keys;
      * RETURNS: None.
      */
-    VOID OnButtonDown( BOOL IsDoubleClick, INT X, INT Y, UINT Keys );
+    virtual VOID OnButtonDown( BOOL IsDoubleClick, INT X, INT Y, UINT Keys );
+
+    /* WM_KEYDOWN window message handle function.
+     * ARGUMENTS:
+     *   - pressed key:
+     *       UINT Keys;
+     * RETURNS: None.
+     */
+    virtual VOID OnKeyDown( UINT Keys );
 
     /* WM_*BUTTONUP window message handle function.
      * ARGUMENTS:
@@ -265,7 +286,6 @@ namespace tcg
      */
     virtual VOID Paint( HDC hDC )
     {
-      TextOut(hDC, 30, 30, "CGSG'2016", 9);
     } /* End of 'Paint' function */
 
     /* Activate handle function.
@@ -313,7 +333,26 @@ namespace tcg
     {
       return Height;
     } /* End of 'GetH' function */
-  }; /* End of 'win' class */
+
+  public:
+    /* Show window function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    inline void Show( void )
+    {
+      ShowWindow(hWnd, SW_SHOW);
+    } /* End of 'Show' function */
+
+    /* Hide window function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    inline void Hide( void )
+    {
+      ShowWindow(hWnd, SW_HIDE);
+    } /* End of 'Hide' function */
+  }; /* End of 'window' class */
 } /* end of 'tcg' namespace */
 
 #endif /* __window_h_ */

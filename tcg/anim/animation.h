@@ -19,7 +19,7 @@
 
 #include <vector>
 
-#include "../win/window.h"
+#include "../win/window_animation.h"
 #include "timer.h"
 #include "input.h"
 #include "render/render.h"
@@ -29,7 +29,7 @@
 namespace tcg
 {
   /* Animation system class declaration */
-  class anim : public win, public render, public timer, public input, public unit_manager
+  class anim : public window_animation, public render, public timer, public input, public unit_manager
   {
   private:
   public:
@@ -69,9 +69,9 @@ namespace tcg
      * RETURNS:
      *   (anim &) self-reference.
      */
-    anim & operator<<( const callback &Callback )
+    anim & operator<<( const std::pair<UINT, callback> &Callback )
     {
-      win::operator<<(Callback);
+      window_animation::operator<<(Callback);
       return *this;
     } /* End of 'operator<<' function */
 
