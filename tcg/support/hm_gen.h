@@ -20,7 +20,7 @@ namespace tcg
     */
     hm_gen( double H, double Lacunarity, double Gain, double Offset, double Octaves, int Seed )
     {
-      math::fBm_multi_ridged fBm(0.7, 5.5, 2.0, 0, 9, time(nullptr));
+      math::fBm_multi_ridged fBm(H, Lacunarity, Gain, Offset, Octaves, Seed);
       int w = 1024, size = w * w;
       double b = 10;
       float *pix = new float[size];
