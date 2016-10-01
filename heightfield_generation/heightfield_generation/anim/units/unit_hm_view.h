@@ -19,6 +19,7 @@ private:
   int SceneSize;
   material Mtl;
   float H, lacunarity, octaves, offset, gain;
+  int Tess;
 
   float * LoadFloat( const char *FileName, int &w, int &h )
   {
@@ -42,7 +43,10 @@ public:
   */
   unit_hm_view( anim &Ani ) : Mtl("hmview")
   {
+    material::MaterialLibrary[Mtl.ID].AddUniform(    "TessFactor", 80.0f);
+    Tess = 1;
     Ani.Camera.Set(vec(0, 1.3, -1.3), vec(0, 0, 0), vec(0, 1, 0));
+    Ani.Camera.Set(vec(0.44, 0.43, 0.35), vec(0.44, 0.43, 0.35) - vec(0.22, -0.18, 0.95).Normalized(), vec(0, 1, 0));
     geometry::vertex vx[32 * 32];
     int w = 32;
     float s = 1.0 / w;
@@ -76,7 +80,7 @@ public:
       pix[i + Noise.GetSize()] = Noise.GetPerm(i);
     }
     material::MaterialLibrary[Mtl.ID].Textures.push_back(texture(1, Noise.GetSize(), 2, pix));
-    material::MaterialLibrary[Mtl.ID].Textures.push_back(texture(2, "bin/textures/ec2.g24"));
+    material::MaterialLibrary[Mtl.ID].Textures.push_back(texture(2, "bin/textures/asm.g24"));
     delete[] pix;
 
     material::MaterialLibrary[Mtl.ID].Textures.push_back(texture(3, "normalmap1.short"));
@@ -148,6 +152,11 @@ public:
     */
   void Keyboard( anim &Ani, unsigned char Key, int X, int Y )
   {
+    if (Key == 'T')
+    {
+      material::MaterialLibrary[Mtl.ID].AddUniform(    "TessFactor", (float)((Tess == 0 ? 0 : 1) * 80.0));
+      Tess = 1 - Tess;
+    }
   } /* End of 'Keyboard' function */
 }; /* End of 'unit_hm_view' class */
 

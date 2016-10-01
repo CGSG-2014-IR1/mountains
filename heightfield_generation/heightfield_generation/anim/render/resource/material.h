@@ -34,19 +34,19 @@ public:
 
   material & AddUniform( const std::string &Name, int Val )
   {
-    MapInt.insert(std::pair<std::string, int>(Name, Val));
+    MapInt[Name] = Val;
     return *this;
   }
 
   material & AddUniform( const std::string &Name, float Val )
   {
-    MapFloat.insert(std::pair<std::string, float>(Name, Val));
+    MapFloat[Name] = Val;
     return *this;
   }
 
   material & AddUniform( const std::string &Name, const matrix &Val )
   {
-    MapMatrix.insert(std::pair<std::string, matrix>(Name, Val));
+    MapMatrix[Name] = Val;
     return *this;
   }
 

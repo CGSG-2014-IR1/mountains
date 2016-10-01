@@ -2,7 +2,7 @@
 
 layout (vertices = 3) out;
 
-const float TessFactor = 20;
+uniform float TessFactor;
 
 in vec2 Tex[];
 out vec2 TexCoords[];

@@ -120,6 +120,7 @@ anim::anim( void ) : CS(coordinate_system::WORLD),
 
   float ratio = (float)WinW / WinH;
   Camera.Set(0.00001, 500, -1, 1, -ratio, ratio);
+  //Camera.Set(vec(0.44, 0.43, 0.35), vec(0.44, 0.43, 0.35) + vec(0.22, -0.18, 0.95).Normalized(), vec(0, 1, 0));
 } /* End of 'anim::anim' constructor */
 
 /* Initialization function.

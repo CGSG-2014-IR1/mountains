@@ -173,6 +173,18 @@ template<class type>
       return Data[index];
     } // End of 'operator[]' function
 
+    /* Matrix data access operator override
+     * ARGUMENTS:
+     *   - access index:
+     *       int index;
+     * RETURNS:
+     *   (type *) matrix data row.
+     */
+    const type * operator[]( int index ) const
+    {
+      return Data[index];
+    } // End of 'operator[]' function
+
     /* Matrix data copy operator override
      * ARGUMENTS:
      *   - right matrix:
@@ -180,7 +192,7 @@ template<class type>
      * RETURNS:
      *   (matrix4 &) matrix self pointer.
      */
-    matrix4 & operator=( matrix4 &RightM )
+    matrix4 & operator=( const matrix4 &RightM )
     {
       for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
