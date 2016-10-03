@@ -20,6 +20,7 @@
 #include "../../def.h"
 
 #include "../animation.h"
+#include "../../math/noise.h"
 #include "unit_road.h"
 
 /* Create mountain function.
@@ -60,6 +61,37 @@ VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, con
   Tri.Material->SetUniform("Height", 4.0f);
   Tri.Material->AddTexture(Ani->AddTexture("TextureHeight", "heightmap1.float"));
   Tri.Material->AddTexture(Ani->AddTexture("Texture", "mountain_light.jpg"));
+  Tri.Material->AddTexture(Ani->AddTexture("ColorMap", "cm.g24"));
+  Tri.Material->AddTexture(Ani->AddTexture("NormalMap", "normalmap1.short"));
+
+  float
+    octaves = 4,
+    lacunarity = 4.5,
+    H = 2.2;
+  Tri.Material->SetUniform(         "H", H);
+  Tri.Material->SetUniform(      "gain", 2.0f);
+  Tri.Material->SetUniform("lacunarity", lacunarity);
+  Tri.Material->SetUniform(   "octaves", octaves);
+  Tri.Material->SetUniform(    "offset", 0.0f);
+  float *exponent_array = new float[(int)octaves];
+  float frequency = 1.0f;
+  for (int i = 0; i < (int)octaves; i++)
+  {
+    exponent_array[i] = pow(frequency, -H);
+    frequency *= lacunarity;
+  }
+  Tri.Material->AddTexture(Ani->AddTexture("ExponentArray", (int)octaves, 1, exponent_array));
+  delete[] exponent_array;
+
+  math::noise Noise;
+  float *pix = new float[Noise.GetSize() * 2];
+  for (int i = 0; i < Noise.GetSize(); i++)
+  {
+    pix[i] = Noise.GetTable(i);
+    pix[i + Noise.GetSize()] = Noise.GetPerm(i);
+  }
+  Tri.Material->AddTexture(Ani->AddTexture("NoiseTex", Noise.GetSize(), 2, pix));
+  delete[] pix;
 
   delete V;
   delete I;
@@ -95,10 +127,10 @@ VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, con
     V[i].ID = IDs[i];
     if (V[i].ID == 1)
     {
-      V[i].P0 = uv(Points[P0[i]].X, Points[P0[i]].Z);
-      V[i].P1 = uv(Points[P1[i]].X, Points[P1[i]].Z);
-      V[i].H0 = uv(Points[H0[i]].X / 60, Points[H0[i]].Z / 60);
-      V[i].H1 = uv(Points[H1[i]].X / 60, Points[H1[i]].Z / 60);
+      V[i].P0 = uv(Points[P0[i]].X / Width, Points[P0[i]].Z / Width);
+      V[i].P1 = uv(Points[P1[i]].X / Width, Points[P1[i]].Z / Width);
+      V[i].H0 = uv(Points[H0[i]].X / Width, Points[H0[i]].Z / Width);
+      V[i].H1 = uv(Points[H1[i]].X / Width, Points[H1[i]].Z / Width);
     }
   }
   for (INT i = 0; i < Triangles.size(); i++)
@@ -113,6 +145,7 @@ VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, con
   Tri.Material = Ani->AddMaterial("mountain", "mountain");
   Tri.Material->AddTexture(Ani->AddTexture("height", "mountain_height.jpg"));
   Tri.Material->AddTexture(Ani->AddTexture("light", "mountain_light.jpg"));
+  Tri.Material->AddTexture(Ani->AddTexture("ColorMap", "cm.g24"));
 
   delete V;
   delete I;
@@ -156,25 +189,25 @@ VOID tcg::unit_road::CreateRoad( tcg::primitive::trimesh &Tri, anim *Ani, const 
     V[i * 3 + 1].UV = TextureCoords[i].Y;
     V[i * 3 + 2].UV = TextureCoords[i].Z;
 
-    V[i * 3].Height =     uv(Points[Heights[i].P[0]].X / 60, Points[Heights[i].P[0]].Z / 60);
-    V[i * 3 + 1].Height = uv(Points[Heights[i].P[1]].X / 60, Points[Heights[i].P[1]].Z / 60);
-    V[i * 3 + 2].Height = uv(Points[Heights[i].P[2]].X / 60, Points[Heights[i].P[2]].Z / 60);
+    V[i * 3].Height =     uv(Points[Heights[i].P[0]].X / Width, Points[Heights[i].P[0]].Z / Width);
+    V[i * 3 + 1].Height = uv(Points[Heights[i].P[1]].X / Width, Points[Heights[i].P[1]].Z / Width);
+    V[i * 3 + 2].Height = uv(Points[Heights[i].P[2]].X / Width, Points[Heights[i].P[2]].Z / Width);
 
-    V[i * 3].P0 =     uv(Points[P0[i].P[0]].X, Points[P0[i].P[0]].Z);
-    V[i * 3 + 1].P0 = uv(Points[P0[i].P[1]].X, Points[P0[i].P[1]].Z);
-    V[i * 3 + 2].P0 = uv(Points[P0[i].P[2]].X, Points[P0[i].P[2]].Z);
+    V[i * 3].P0 =     uv(Points[P0[i].P[0]].X / Width, Points[P0[i].P[0]].Z / Width);
+    V[i * 3 + 1].P0 = uv(Points[P0[i].P[1]].X / Width, Points[P0[i].P[1]].Z / Width);
+    V[i * 3 + 2].P0 = uv(Points[P0[i].P[2]].X / Width, Points[P0[i].P[2]].Z / Width);
 
-    V[i * 3].P1 =     uv(Points[P1[i].P[0]].X, Points[P1[i].P[0]].Z);
-    V[i * 3 + 1].P1 = uv(Points[P1[i].P[1]].X, Points[P1[i].P[1]].Z);
-    V[i * 3 + 2].P1 = uv(Points[P1[i].P[2]].X, Points[P1[i].P[2]].Z);
+    V[i * 3].P1 =     uv(Points[P1[i].P[0]].X / Width, Points[P1[i].P[0]].Z / Width);
+    V[i * 3 + 1].P1 = uv(Points[P1[i].P[1]].X / Width, Points[P1[i].P[1]].Z / Width);
+    V[i * 3 + 2].P1 = uv(Points[P1[i].P[2]].X / Width, Points[P1[i].P[2]].Z / Width);
 
-    V[i * 3].H0 =     uv(Points[H0[i].P[0]].X / 60, Points[H0[i].P[0]].Z / 60);
-    V[i * 3 + 1].H0 = uv(Points[H0[i].P[1]].X / 60, Points[H0[i].P[1]].Z / 60);
-    V[i * 3 + 2].H0 = uv(Points[H0[i].P[2]].X / 60, Points[H0[i].P[2]].Z / 60);
+    V[i * 3].H0 =     uv(Points[H0[i].P[0]].X / Width, Points[H0[i].P[0]].Z / Width);
+    V[i * 3 + 1].H0 = uv(Points[H0[i].P[1]].X / Width, Points[H0[i].P[1]].Z / Width);
+    V[i * 3 + 2].H0 = uv(Points[H0[i].P[2]].X / Width, Points[H0[i].P[2]].Z / Width);
 
-    V[i * 3].H1 =     uv(Points[H1[i].P[0]].X / 60, Points[H1[i].P[0]].Z / 60);
-    V[i * 3 + 1].H1 = uv(Points[H1[i].P[1]].X / 60, Points[H1[i].P[1]].Z / 60);
-    V[i * 3 + 2].H1 = uv(Points[H1[i].P[2]].X / 60, Points[H1[i].P[2]].Z / 60);
+    V[i * 3].H1 =     uv(Points[H1[i].P[0]].X / Width, Points[H1[i].P[0]].Z / Width);
+    V[i * 3 + 1].H1 = uv(Points[H1[i].P[1]].X / Width, Points[H1[i].P[1]].Z / Width);
+    V[i * 3 + 2].H1 = uv(Points[H1[i].P[2]].X / Width, Points[H1[i].P[2]].Z / Width);
 
     I[i * 3] =     i * 3;
     I[i * 3 + 1] = i * 3 + 1;

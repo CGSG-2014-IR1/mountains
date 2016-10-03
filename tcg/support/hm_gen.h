@@ -16,8 +16,8 @@ namespace tcg
   {
   public:
     /* Class constructor.
-    * ARGUMENTS: None.
-    */
+     * ARGUMENTS: None.
+     */
     hm_gen( double H, double Lacunarity, double Gain, double Offset, double Octaves, int Seed )
     {
       math::fBm_multi_ridged fBm(H, Lacunarity, Gain, Offset, Octaves, Seed);
@@ -27,9 +27,9 @@ namespace tcg
       for (int i = 0; i < w; i++)
         for (int j = 0; j < w; j++)
           pix[i * w + j] = fBm(vec(j / (double)w * b, i / (double)w * b, 0));
-  
+
       FILE *f;
-  
+
       if ((f = fopen("bin/textures/heightmap1.float", "wb")) == nullptr)
         throw "Too bad - file won't open!";
       fwrite(&w, sizeof(int), 1, f);

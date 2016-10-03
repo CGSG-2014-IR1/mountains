@@ -37,7 +37,7 @@ namespace tcg
     primitive::trimesh Quad;
     float H, Lacunarity, Octaves, Offset, Gain, FSeed;
     window_list Interface;
-    bool Rend;
+    bool Rend, N;
 
     void Gen( void )
     {
@@ -72,6 +72,7 @@ namespace tcg
         pix[i + Noise.GetSize()] = Noise.GetPerm(i);
       }
       Quad.Material->AddTexture(Ani->AddTexture("NoiseTex", Noise.GetSize(), 2, pix));
+      Quad.Material->SetUniform("ISN", 0);
       delete[] pix;
 
       Interface.PopUp();
@@ -95,6 +96,15 @@ namespace tcg
         return;
       Quad.Render();
     } /* End of 'Render' function */
+
+    VOID Response( VOID )
+    {
+      if (Ani->KeysClick['N'])
+      {
+        N = !N;
+        Quad.Material->SetUniform("ISN", N ? 1 : 0);
+      }
+    }
   }; /* End of 'unit_hm_preview' class */
 } /* end of 'tcg' namespace */
 

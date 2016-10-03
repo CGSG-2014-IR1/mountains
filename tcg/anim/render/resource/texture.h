@@ -52,7 +52,7 @@ namespace tcg
       CHAR Path[MAX_STR] = "bin/textures/";
       strcat(Path, FileName);
 
-      if (!LoadG24(Path) && !LoadPFF(Path) && !LoadFloat(Path))
+      if (!LoadG24(Path, TexNo) && !LoadPFF(Path, TexNo) && !LoadFloat(Path, TexNo) && !LoadShort(Path, TexNo))
       {
         glDeleteTextures(1, &TexNo);
         return 0;
@@ -68,7 +68,7 @@ namespace tcg
      * RETURNS:
      *   (BOOL) TRUE if successfull, FALSE otherwise.
      */
-    static BOOL LoadG24( const CHAR *FileName )
+    static BOOL LoadG24( const CHAR *FileName, int TexNo )
     {
       BOOL isok = FALSE;
 
@@ -89,10 +89,10 @@ namespace tcg
           fread(image, 3, w * h, F);
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
           gluBuild2DMipmaps(GL_TEXTURE_2D, 3, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, image);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+          glTextureParameteri(TexNo, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+          glTextureParameteri(TexNo, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTextureParameteri(TexNo, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+          glTextureParameteri(TexNo, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
           delete[] image;
           isok = TRUE;
         }
@@ -108,7 +108,7 @@ namespace tcg
      * RETURNS:
      *   (BOOL) TRUE if successfull, FALSE otherwise.
      */
-    static BOOL LoadFloat( const CHAR *FileName )
+    static BOOL LoadFloat( const CHAR *FileName, int TexNo )
     {
       BOOL isok = FALSE;
 
@@ -129,10 +129,10 @@ namespace tcg
           fread(pix, sizeof(float), w * h, F);
 
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+          glTextureParameteri(TexNo, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+          glTextureParameteri(TexNo, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTextureParameteri(TexNo, GL_TEXTURE_WRAP_S, GL_CLAMP);
+          glTextureParameteri(TexNo, GL_TEXTURE_WRAP_T, GL_CLAMP);
           glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI, w, h, 0, GL_ALPHA, GL_FLOAT, pix);
           glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -144,6 +144,49 @@ namespace tcg
       return isok;
     } /* End of 'LoadFloat' function */
 
+    /* Load texture from *.short file function.
+     * ARGUMENTS:
+     *   - file name:
+     *       const CHAR *FileName;
+     * RETURNS:
+     *   (BOOL) TRUE if successfull, FALSE otherwise.
+     */
+    static BOOL LoadShort( const CHAR *FileName, int TexNo )
+    {
+      BOOL isok = FALSE;
+
+      FILE *F = fopen(FileName, "rb");
+      if (F != NULL)
+      {
+        INT w = 0, h = 0;
+
+        fread(&w, sizeof(INT), 1, F);
+        fread(&h, sizeof(INT), 1, F);
+
+        fseek(F, 0, SEEK_END);
+        INT len;
+        if ((len = ftell(F)) == (w * h * sizeof(SHORT) * 3))
+        {
+          SHORT *pix = new SHORT[w * h * 3];
+          fseek(F, sizeof(INT) * 2, SEEK_SET);
+          fread(pix, sizeof(SHORT) * 3, w * h, F);
+
+          glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+          glTextureParameteri(TexNo, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+          glTextureParameteri(TexNo, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTextureParameteri(TexNo, GL_TEXTURE_WRAP_S, GL_CLAMP);
+          glTextureParameteri(TexNo, GL_TEXTURE_WRAP_T, GL_CLAMP);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_SHORT, pix);
+          glGenerateMipmap(GL_TEXTURE_2D);
+
+          delete[] pix;
+          isok = TRUE;
+        }
+        fclose(F);
+      }
+      return isok;
+    } /* End of 'LoadShort' function */
+
     /* Load texture from *.BMP, *.PNG, *.JPG, *.TGA, *.DDS, *.PSD, or *.HDR file function.
      * ARGUMENTS:
      *   - file name:
@@ -151,16 +194,16 @@ namespace tcg
      * RETURNS:
      *   (BOOL) TRUE if successfull, FALSE otherwise.
      */
-    static BOOL LoadPFF( const CHAR *FileName )
+    static BOOL LoadPFF( const CHAR *FileName, int TexNo )
     {
       INT w = 0, h = 0;
       BYTE *image = SOIL_load_image(FileName, &w, &h, 0, SOIL_LOAD_RGB);
       if (image == nullptr)
         return FALSE;
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      glTexParameteri(TexNo, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(TexNo, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(TexNo, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(TexNo, GL_TEXTURE_WRAP_T, GL_REPEAT);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
       glGenerateMipmap(GL_TEXTURE_2D);
       SOIL_free_image_data(image);
@@ -180,13 +223,13 @@ namespace tcg
       strcpy(this->Name, Name);
     } /* End of 'texture' function */
 
-	/* Texture constructor.
-	 * ARGUMENTS:
-	 *   - texture name:
-	 *       CHAR *Name;
-	 *   - texture dimensions:
-	 *       INT W, H;
-	 *   - texture pixels:
+    /* Texture constructor.
+     * ARGUMENTS:
+     *   - texture name:
+     *       CHAR *Name;
+     *   - texture dimensions:
+     *       INT W, H;
+     *   - texture pixels:
      *       FLOAT *Data.
      */
     texture( CHAR *Name, INT W, INT H, FLOAT *Data )
@@ -197,10 +240,10 @@ namespace tcg
       strcpy(this->Name, Name);
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+      glTextureParameteri(TexNo, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTextureParameteri(TexNo, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTextureParameteri(TexNo, GL_TEXTURE_WRAP_S, GL_CLAMP);
+      glTextureParameteri(TexNo, GL_TEXTURE_WRAP_T, GL_CLAMP);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI,
                    W, H, 0, GL_ALPHA, GL_FLOAT, Data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -209,10 +252,10 @@ namespace tcg
     } /* End of 'texture' function */
 
     /* Texture data update function.
-	 * ARGUMENTS:
-	 *   - new dimensions:
-	 *       INT W, H;
-	 *   - new pixels:
+     * ARGUMENTS:
+     *   - new dimensions:
+     *       INT W, H;
+     *   - new pixels:
      *       FLOAT *Data.
      */
     void Update( INT W, INT H, FLOAT *Data )
@@ -220,10 +263,10 @@ namespace tcg
       glBindTexture(GL_TEXTURE_2D, TexNo);
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+      glTextureParameteri(TexNo, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTextureParameteri(TexNo, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTextureParameteri(TexNo, GL_TEXTURE_WRAP_S, GL_CLAMP);
+      glTextureParameteri(TexNo, GL_TEXTURE_WRAP_T, GL_CLAMP);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA_FLOAT32_ATI,
                    W, H, 0, GL_ALPHA, GL_FLOAT, Data);
       glGenerateMipmap(GL_TEXTURE_2D);

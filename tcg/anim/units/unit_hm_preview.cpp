@@ -28,6 +28,7 @@ namespace tcg
     Interface("Fractal parameters", [this]{Update();},
               [this]{Gen();})
   {
+    N = true;
     Quad.CreateQuad(vec(1, 1, 0), vec(-1, 1, 0), vec(-1, -1, 0), vec(1, -1, 0));
     Quad.Material = Ani->AddMaterial("hm_preview", "fbm");
 

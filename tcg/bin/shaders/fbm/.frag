@@ -111,10 +111,26 @@ float fBm( vec3 point )
   return (result);
 }
 
+uniform int ISN;
+
 void main( void )
 {
   vec3 point = Pos;
+  float step = 1.0 / 2048.0;
   float H = fBm(point);
-  gl_FragColor = vec4(H, H, H, 1);
+  if (ISN == 0)
+    gl_FragColor = vec4(H, H, H, 1);
+  else
+  {
+    vec3 b1 = vec3(point.x + step, point.y, fBm(point + vec3(step, 0, 0)));
+    vec3 b2 = vec3(point.x, point.y + step, fBm(point + vec3(0, step, 0)));
+    point.z = fBm(point);
+    vec3 N = normalize(cross(normalize(b1 - point), normalize(b2 - point)));
+    //N *= sign(N.y);
+    
+    float c = dot(N, normalize(vec3(1, 1, 1)));
+    gl_FragColor = vec4(c, c, c, 1);
+    gl_FragColor = vec4(N, 1);
+  }
   //gl_FragColor = vec4(0.6, 0.1, 0.1, 1);
 } // End of 'main' function

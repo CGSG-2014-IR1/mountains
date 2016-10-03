@@ -20,6 +20,7 @@ out vec2 InH0[];
 out vec2 InH1[];
 
 uniform mat4 MatrWVP;
+uniform vec3 CameraPos;
 
 float saturate( float x )
 {
@@ -38,9 +39,11 @@ float CalcFactor( vec4 p0, vec4 p1 )
 
   if (pp0.z <= -2.0 && pp1.z <= -2.0)
     return 0;
-  float d = distance(pp0.xyz / pp0.w, pp1.xyz / pp1.w);
-
-  return d * TessFactor;
+  float sdw = distance(pp0.xyz / pp0.w, pp1.xyz / pp1.w) * 0.7;
+  float dw = 1.0 / min(1, distance(CameraPos, (p0 + p1).xyz / 2)) * sdw;
+  float pw = abs(dot(normalize(p0 - p1).xyz, normalize((p0 + p1).xyz / 2 - CameraPos))) * sdw;
+  
+  return (dw + sdw + pw) * TessFactor;
 }
 
 void main( void )

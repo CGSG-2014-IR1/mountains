@@ -6,6 +6,7 @@
 layout (triangles, fractional_odd_spacing, ccw) in;
 
 out vec2 Tex;
+out vec3 Pos;
 
 uniform mat4 MatrWVP;
 
@@ -50,12 +51,12 @@ void main( void )
     InH1[2] * gl_TessCoord.z;            
 
   if (!(InId[0] > 0 && gl_TessCoord.x == 1 ||
-      InId[1] > 0 && gl_TessCoord.y == 1 ||
-      InId[2] > 0 && gl_TessCoord.z == 1))
-    pos = vec4(pos.x, texture2D(TextureHeight, vec2(pos.x / 60, pos.z / 60)).a * Height, pos.z, 1);
+        InId[1] > 0 && gl_TessCoord.y == 1 ||
+        InId[2] > 0 && gl_TessCoord.z == 1))
+    pos = vec4(pos.x, texture2D(TextureHeight, Tex).a * Height, pos.z, 1);
   else
   {
-    if (length(vec2(pos.x, pos.z) - P1) == 0)
+    if (length(Tex - P1) < 0.00001)
     {
       float h1 = texture2D(TextureHeight, H1).a * Height;
       if (h1 > 1.5)
@@ -69,10 +70,11 @@ void main( void )
         h0 *= 0.95;
       if (h1 > 1.5)
         h1 *= 0.95;
-      float alpha = length(vec2(pos.x, pos.z) - P0) / length(vec2(pos.x, pos.z) - P1);
+      float alpha = length(Tex - P0) / length(Tex - P1);
       pos = vec4(pos.x, (h0 + alpha * h1) / (1.0 + alpha), pos.z, 1);
     }
   }
 
+  Pos = pos.xyz;
   gl_Position = MatrWVP * pos;
 }
