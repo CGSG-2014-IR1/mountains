@@ -219,10 +219,10 @@ namespace tcg
     /* Road segment struct */
     struct road_segment
     {
-      INT P[2], Border[2][2], Shoulder[2][2], Neighbour[2][2], C; // Road segment coordinates.
-      std::vector<intersection> Intersections[4];                 // Intersections with triangles.
+      INT P[2], Border[2][2], Shoulder[2][2], Neighbour[2][2], C, Rotation[2]; // Road segment coordinates.
+      std::vector<intersection> Intersections[4];                              // Intersections with triangles.
       BOOL IsTexCoord[2], IsRounded[2];
-      FLOAT TexCoord[2], HalfLen;
+      DOUBLE TexCoord[2], HalfLen;
 
       /* Struct constructor.
        * ARGUMENTS:
@@ -244,11 +244,106 @@ namespace tcg
       } /* End of 'road_segment' function */
     }; /* End of 'road_segment' struct */
 
+    /* Interpolation class */
+    class interpolation
+    {
+    public:
+      vec p0, p1, p2, p3; // Interpolation points.
+      DOUBLE t0, t1, t2, t3; // Interpolation distances.
+
+      /* Class constructor.
+       * ARGUMENTS:
+       *   - interpolation points:
+       *       const vec &P0, &P1, &P2, &P3;
+       */
+      interpolation( const vec &P0, const vec &P1, const vec &P2, const vec &P3 ) :
+        p0(P0), p1(P1), p2(P2), p3(P3)
+      {
+        t0 = 0;
+        t1 = sqrt(sqrt((p1.X - p0.X) * (p1.X - p0.X) +
+                       (p1.Z - p0.Z) * (p1.Z - p0.Z))) + t0;
+        t2 = sqrt(sqrt((p2.X - p1.X) * (p2.X - p1.X) +
+                       (p2.Z - p1.Z) * (p2.Z - p1.Z))) + t1;
+        t3 = sqrt(sqrt((p3.X - p2.X) * (p3.X - p2.X) +
+                       (p3.Z - p2.Z) * (p3.Z - p2.Z))) + t2;
+      } /* End of 'interpolation' class */
+
+      /* Convert interpolation distance to point function.
+       * ARGUMENTS:
+       *   - interpolation distance:
+       *       DOUBLE t;
+       * RETURNS:
+       *   (vec) result point.
+       */
+      vec operator()( DOUBLE t )
+      {
+        vec
+          a1 = p0 * (t1 - t) / (t1 - t0) + p1 * (t - t0) / (t1 - t0),
+          a2 = p1 * (t2 - t) / (t2 - t1) + p2 * (t - t1) / (t2 - t1),
+          a3 = p2 * (t3 - t) / (t3 - t2) + p3 * (t - t2) / (t3 - t2),
+
+          b1 = a1 * (t2 - t) / (t2 - t0) + a2 * (t - t0) / (t2 - t0),
+          b2 = a2 * (t3 - t) / (t3 - t1) + a3 * (t - t1) / (t3 - t1);
+
+        return b1 * (t2 - t) / (t2 - t1) + b2 * (t - t1) / (t2 - t1);
+      } /* End of 'operator()' function */
+
+      /* Convert interpolation distance to point function.
+       * ARGUMENTS:
+       *   - interpolation distance:
+       *       DOUBLE t;
+       * RETURNS:
+       *   (vec) result point.
+       */
+      vec Interpolate( DOUBLE t )
+      {
+        vec
+          a1 = p0 * (t1 - t) / (t1 - t0) + p1 * (t - t0) / (t1 - t0),
+          a2 = p1 * (t2 - t) / (t2 - t1) + p2 * (t - t1) / (t2 - t1),
+          a3 = p2 * (t3 - t) / (t3 - t2) + p3 * (t - t2) / (t3 - t2),
+
+          b1 = a1 * (t2 - t) / (t2 - t0) + a2 * (t - t0) / (t2 - t0),
+          b2 = a2 * (t3 - t) / (t3 - t1) + a3 * (t - t1) / (t3 - t1);
+
+        return b1 * (t2 - t) / (t2 - t1) + b2 * (t - t1) / (t2 - t1);
+      } /* End of 'Interpolate' function */
+
+      /* Compute normal in point function.
+       * ARGUMENTS:
+       *   - interpolation distance:
+       *       DOUBLE t;
+       * RETURNS:
+       *   (vec) result normal.
+       */
+      vec Normal( DOUBLE t )
+      {
+        vec
+          dir0 = Interpolate(t + 0.0001) - Interpolate(t),
+          dir1 = Interpolate(t) - Interpolate(t - 0.0001);
+
+        return (vec(dir0.Z, 0, -dir0.X).Normalize() + vec(dir1.Z, 0, -dir1.X).Normalize()).Normalize();
+      } /* End of 'Normal' function */
+
+      /* Compute normal function.
+       * ARGUMENTS: None.
+       * RETURNS:
+       *   (vec) result normal.
+       */
+      vec Normal( VOID )
+      {
+        for (DOUBLE t = t1 + 0.01; t < t2 - 0.01; t += 0.001)
+          if (Rotation(p2 - p1, Interpolate(t) - p1) != Rotation(p2 - p1, Interpolate(t + 0.01) - p1))
+            return Normal(t);
+      
+        return vec(p2.Z - p1.Z, 0, p1.X - p2.X).Normalize();
+      } /* End of 'Normal' function */
+    }; /* End of 'interpolation' class */
+
   private:
     const DOUBLE
       Width = 60, Height = 60,
-      RoadHalfWidth = 0.8, RoadShoulderWidth = 0.3,
-      MaxRoadLen = 1.0, MaxUpTan = 0.3, MaxTurnAngle = 3;
+      RoadHalfWidth = 0.1, RoadShoulderWidth = 0.1,
+      MaxRoadLen = 0.4, MaxUpTan = 0.3, MaxTurnAngle = 15;
 
     anim *Ani;
 
@@ -588,9 +683,11 @@ namespace tcg
             {
               isneighbour = TRUE, isstraight = FALSE;
               if (max[no == 0 ? !side : side][no] != -1)
-                act = max[no == 0 ? !side : side][no], actno = maxno[no == 0 ? !side : side][no];
+                act = max[no == 0 ? !side : side][no], actno = maxno[no == 0 ? !side : side][no],
+                RoadSegments[i].Rotation[no] = side * -2 + 1;
               else if (straight[no] != -1)
-                act = straight[no], actno = straightno[no], isstraight = TRUE;
+                act = straight[no], actno = straightno[no], isstraight = TRUE,
+                RoadSegments[i].Rotation[no] = 0;
               else if (min[no == 0 ? side : !side][no] != -1)
                 act = min[no == 0 ? side : !side][no], actno = minno[no == 0 ? side : !side][no];
               else
@@ -624,6 +721,7 @@ namespace tcg
                 RoadSegments[act].Border[no == 0 ? side == LEFT ? !actno : actno : side == LEFT ? actno : !actno][actno] = RoadSegments[i].Border[side][no];
                 RoadSegments[act].Shoulder[no == 0 ? side == LEFT ? !actno : actno : side == LEFT ? actno : !actno][actno] = RoadSegments[i].Shoulder[side][no];
                 RoadSegments[act].Neighbour[no == 0 ? side == LEFT ? !actno : actno : side == LEFT ? actno : !actno][actno] = i;
+                RoadSegments[act].Rotation[actno] = actno == no ? -RoadSegments[i].Rotation[no] : RoadSegments[i].Rotation[no];
               }
             }
       }
@@ -776,6 +874,268 @@ namespace tcg
         RoundRoadSegment(RoadSegments, NewRoadSegments, rs, HalfWidth, Shoulder);
       RoadSegments = NewRoadSegments;
     } /* End of 'RoundRoadSegments' function */
+
+    /* Interpolate road segment function.
+     * ARGUMENTS:
+     *   - old and new road segments:
+     *       std::vector<road_segment> &OldRoadSegments, &NewRoadSegments;
+     *   - road segment index:
+     *       INT rs;
+     *   - road width and shoulder width:
+     *       DOUBLE HalfWidth, DOUBLE Shoulder;
+     * RETURNS: None.
+     */
+    VOID InterpolateRoadSegment( std::vector<road_segment> &OldRoadSegments, std::vector<road_segment> &NewRoadSegments,
+                                 INT rs, DOUBLE HalfWidth, DOUBLE Shoulder )
+    {
+      if (OldRoadSegments[rs].Neighbour[LEFT][0] != -1 && OldRoadSegments[rs].Neighbour[LEFT][0] == OldRoadSegments[rs].Neighbour[RIGHT][0] &&
+          OldRoadSegments[rs].Neighbour[LEFT][1] != -1 && OldRoadSegments[rs].Neighbour[LEFT][1] == OldRoadSegments[rs].Neighbour[RIGHT][1] &&
+          OldRoadSegments[rs].Rotation[0] != OldRoadSegments[rs].Rotation[1])
+      {
+        INT
+          rot0 = OldRoadSegments[rs].Rotation[0], rot1 = OldRoadSegments[rs].Rotation[1],
+          nb0 = OldRoadSegments[rs].Neighbour[LEFT][0], nb1 = OldRoadSegments[rs].Neighbour[LEFT][1];
+        vec
+          p0(Points[OldRoadSegments[nb0].P[0] == OldRoadSegments[rs].P[0] ? OldRoadSegments[nb0].P[1] : OldRoadSegments[nb0].P[0]]),
+          p1(Points[OldRoadSegments[rs].P[0]]),
+          p2(Points[OldRoadSegments[rs].P[1]]),
+          p3(Points[OldRoadSegments[nb1].P[1] == OldRoadSegments[rs].P[1] ? OldRoadSegments[nb1].P[0] : OldRoadSegments[nb1].P[1]]);
+        interpolation I(p0, p1, p2, p3);
+        vec norm(I.Normal());
+
+        INT num = max((INT)((Points[OldRoadSegments[rs].P[1]] - Points[OldRoadSegments[rs].P[0]]).Length2D() / MaxRoadLen / 2), 1);
+        if (num == 1)
+        {
+          NewRoadSegments.push_back(road_segment(OldRoadSegments[rs].P[0], OldRoadSegments[rs].P[1]));
+          return;
+        }
+
+        vec
+          dir((Points[OldRoadSegments[rs].P[1]] - Points[OldRoadSegments[rs].P[0]]).Normalize()),
+          norm0((Points[OldRoadSegments[rs].Border[LEFT][0]] - Points[OldRoadSegments[rs].Border[RIGHT][0]]).Normalize()),
+          norm1((Points[OldRoadSegments[rs].Border[LEFT][1]] - Points[OldRoadSegments[rs].Border[RIGHT][1]]).Normalize()),
+          c((Points[OldRoadSegments[rs].P[0]] + Points[OldRoadSegments[rs].P[1]]) / 2);
+        DOUBLE
+          len0 = (c + norm * (HalfWidth + Shoulder) * rot0 - Points[OldRoadSegments[rs].Shoulder[rot0 == 1 ? LEFT : RIGHT][0]]).Length2D(),
+          len1 = (c + norm * (HalfWidth + Shoulder) * rot1 - Points[OldRoadSegments[rs].Shoulder[rot1 == 1 ? LEFT : RIGHT][1]]).Length2D();
+        INT P0 = OldRoadSegments[rs].P[0], P1 = OldRoadSegments[rs].P[1], C = Points.size();
+        Points.push_back(c);
+
+        // First part.
+        p1 = Points[P0] + norm0 * (HalfWidth + Shoulder) * rot0;
+        p0 = p1 + dir * tsg::TMatr<DBL>().SetRotate(180, norm0) * len0;
+        p2 = c + norm * (HalfWidth + Shoulder) * rot0;
+        p3 = p2 - dir * tsg::TMatr<DBL>().SetRotate(180, norm) * len0;
+
+        I = interpolation(p0, p1, p2, p3);
+        
+        DOUBLE t, first = -1, second = -1;
+        for (INT i = 1; i <= num; i++)
+        {
+          first = i == 1 ? P0 : second;
+          second = i == num ? C : Points.size();
+          if (i != num)
+          {
+            t = I.t1 + (I.t2 - I.t1) * i / num;
+            Points.push_back(I(t) - I.Normal(t) * (HalfWidth + Shoulder) * rot0);
+          }
+
+          DOUBLE
+            t1 = I.t1 + (I.t2 - I.t1) * (i - 1) / num,
+            t2 = I.t1 + (I.t2 - I.t1) * i / num;
+          vec n0(I.Normal(t1)), n1(I.Normal(t2)); 
+          DOUBLE angle = tsg::Rad2Deg(acos(min(0.999, max(-0.999, n0 & n1))));
+          INT anum = angle < MaxTurnAngle ? 1 : ceil(angle / MaxTurnAngle);
+          if (anum == 1)
+            NewRoadSegments.push_back(road_segment(first, second));
+          else
+          {
+            t = t1 + (t2 - t1) / anum;
+            Points.push_back(I(t) - I.Normal(t) * (HalfWidth + Shoulder) * rot0);
+            NewRoadSegments.push_back(road_segment(first, Points.size() - 1));
+            for (INT j = 2; j < anum; j++)
+            {
+              t = t1 + (t2 - t1) * j / anum;
+              Points.push_back(I(t) - I.Normal(t) * (HalfWidth + Shoulder) * rot0);
+              NewRoadSegments.push_back(road_segment(Points.size() - 2, Points.size() - 1));
+            }
+            NewRoadSegments.push_back(road_segment(Points.size() - 1, second));
+          }
+        }
+
+        // Second part.
+        p1 = Points[P1] + norm1 * (HalfWidth + Shoulder) * rot1;
+        p0 = p1 - dir * tsg::TMatr<DBL>().SetRotate(180, norm1) * len1;
+        p2 = c + norm * (HalfWidth + Shoulder) * rot1;
+        p3 = p2 + dir * tsg::TMatr<DBL>().SetRotate(180, norm) * len1;
+        
+        I = interpolation(p0, p1, p2, p3);
+        
+        for (INT i = 1; i <= num; i++)
+        {
+          first = i == 1 ? P1 : second;
+          second = i == num ? C : Points.size();
+          if (i != num)
+          {
+            t = I.t1 + (I.t2 - I.t1) * i / num;
+            Points.push_back(I(t) + I.Normal(t) * (HalfWidth + Shoulder) * rot1);
+          }
+        
+          DOUBLE
+            t1 = I.t1 + (I.t2 - I.t1) * (i - 1) / num,
+            t2 = I.t1 + (I.t2 - I.t1) * i / num;
+          vec n0(I.Normal(t1)), n1(I.Normal(t2)); 
+          DOUBLE angle = tsg::Rad2Deg(acos(min(0.999, max(-0.999, n0 & n1))));
+          INT anum = angle < MaxTurnAngle ? 1 : ceil(angle / MaxTurnAngle);
+          if (anum == 1)
+            NewRoadSegments.push_back(road_segment(first, second));
+          else
+          {
+            t = t1 + (t2 - t1) / anum;
+            Points.push_back(I(t) + I.Normal(t) * (HalfWidth + Shoulder) * rot1);
+            NewRoadSegments.push_back(road_segment(first, Points.size() - 1));
+            for (INT j = 2; j < anum; j++)
+            {
+              t = t1 + (t2 - t1) * j / anum;
+              Points.push_back(I(t) + I.Normal(t) * (HalfWidth + Shoulder) * rot1);
+              NewRoadSegments.push_back(road_segment(Points.size() - 2, Points.size() - 1));
+            }
+            NewRoadSegments.push_back(road_segment(Points.size() - 1, second));
+          }
+        }
+      }
+      else
+      {
+        INT num = max((INT)((Points[OldRoadSegments[rs].P[1]] - Points[OldRoadSegments[rs].P[0]]).Length2D() / MaxRoadLen), 1);
+        if (num == 1)
+        {
+          NewRoadSegments.push_back(road_segment(OldRoadSegments[rs].P[0], OldRoadSegments[rs].P[1]));
+          return;
+        }
+
+        INT rot = 1;
+        if (OldRoadSegments[rs].Neighbour[LEFT][0] == OldRoadSegments[rs].Neighbour[RIGHT][0] &&
+            OldRoadSegments[rs].Neighbour[LEFT][0] != -1 && OldRoadSegments[rs].Rotation[0] != 0)
+          rot = OldRoadSegments[rs].Rotation[0];
+        else if (OldRoadSegments[rs].Neighbour[LEFT][1] == OldRoadSegments[rs].Neighbour[RIGHT][1] &&
+                 OldRoadSegments[rs].Neighbour[LEFT][1] != -1 && OldRoadSegments[rs].Rotation[1] != 0)
+          rot = OldRoadSegments[rs].Rotation[1];
+        vec
+          dir = (Points[OldRoadSegments[rs].P[1]] - Points[OldRoadSegments[rs].P[0]]).Normalize(),
+          norm(dir.Z, 0, -dir.X),
+          norm0((Points[OldRoadSegments[rs].Border[LEFT][0]] - Points[OldRoadSegments[rs].Border[RIGHT][0]]).Normalize()),
+          norm1((Points[OldRoadSegments[rs].Border[LEFT][1]] - Points[OldRoadSegments[rs].Border[RIGHT][1]]).Normalize()),
+          p0, p1, p2, p3;
+        DOUBLE len =
+          rot == 1 ? (Points[OldRoadSegments[rs].P[1]] + norm1 * (HalfWidth + Shoulder) -
+                      Points[OldRoadSegments[rs].P[0]] - norm0 * (HalfWidth + Shoulder)).Length2D() :
+                     (Points[OldRoadSegments[rs].P[1]] - norm1 * (HalfWidth + Shoulder) -
+                      Points[OldRoadSegments[rs].P[0]] + norm0 * (HalfWidth + Shoulder)).Length2D();
+        INT P0, P1;
+        if (OldRoadSegments[rs].Neighbour[LEFT][0] != OldRoadSegments[rs].Neighbour[RIGHT][0])
+        {
+          if ((Points[OldRoadSegments[rs].P[1]] - (Points[OldRoadSegments[rs].Shoulder[LEFT][0]] -  norm * (HalfWidth + Shoulder))).Length2D() <
+              (Points[OldRoadSegments[rs].P[1]] - (Points[OldRoadSegments[rs].Shoulder[RIGHT][0]] + norm * (HalfWidth + Shoulder))).Length2D())
+            Points.push_back(Points[OldRoadSegments[rs].Shoulder[LEFT][0]] - norm * (HalfWidth + Shoulder) + dir * MaxRoadLen);
+          else
+            Points.push_back(Points[OldRoadSegments[rs].Shoulder[RIGHT][0]] + norm * (HalfWidth + Shoulder) + dir * MaxRoadLen);
+          P0 = Points.size() - 1;
+          NewRoadSegments.push_back(road_segment(OldRoadSegments[rs].P[0], P0));
+        }
+        else
+          P0 = OldRoadSegments[rs].P[0];
+
+        if (OldRoadSegments[rs].Neighbour[LEFT][1] != OldRoadSegments[rs].Neighbour[RIGHT][1])
+        {
+          if ((Points[OldRoadSegments[rs].P[0]] - (Points[OldRoadSegments[rs].Shoulder[LEFT][1]] -  norm * (HalfWidth + Shoulder))).Length2D() <
+              (Points[OldRoadSegments[rs].P[0]] - (Points[OldRoadSegments[rs].Shoulder[RIGHT][1]] + norm * (HalfWidth + Shoulder))).Length2D())
+            Points.push_back(Points[OldRoadSegments[rs].Shoulder[LEFT][1]] - norm * (HalfWidth + Shoulder) - dir * MaxRoadLen);
+          else
+            Points.push_back(Points[OldRoadSegments[rs].Shoulder[RIGHT][1]] + norm * (HalfWidth + Shoulder) - dir * MaxRoadLen);
+          P1 = Points.size() - 1;
+          NewRoadSegments.push_back(road_segment(P1, OldRoadSegments[rs].P[1]));
+        }
+        else
+          P1 = OldRoadSegments[rs].P[1];
+
+
+        if (OldRoadSegments[rs].Neighbour[LEFT][0] != OldRoadSegments[rs].Neighbour[RIGHT][0] ||
+            OldRoadSegments[rs].Neighbour[LEFT][0] == -1)
+        {
+          p1 = Points[P0] + norm * (HalfWidth + Shoulder) * rot;
+          p0 = p1 - dir * len;
+        }
+        else
+        {
+          p1 = Points[P0] + norm0 * (HalfWidth + Shoulder) * rot;
+          p0 = p1 + dir * tsg::TMatr<DBL>().SetRotate(180, norm0) * len;
+        }
+        if (OldRoadSegments[rs].Neighbour[LEFT][1] != OldRoadSegments[rs].Neighbour[RIGHT][1] ||
+            OldRoadSegments[rs].Neighbour[LEFT][1] == -1)
+        {
+          p2 = Points[P1] + norm * (HalfWidth + Shoulder) * rot;
+          p3 = p2 + dir * len;
+        }
+        else
+        {
+          p2 = Points[P1] + norm1 * (HalfWidth + Shoulder) * rot;
+          p3 = p2 - dir * tsg::TMatr<DBL>().SetRotate(180, norm1) * len;
+        }
+
+        interpolation I(p0, p1, p2, p3);
+        
+        DOUBLE t, first = -1, second = -1;
+        for (INT i = 1; i <= num; i++)
+        {
+          first = i == 1 ? P0 : second;
+          second = i == num ? P1 : Points.size();
+          if (i != num)
+          {
+            t = I.t1 + (I.t2 - I.t1) * i / num;
+            Points.push_back(I(t) - I.Normal(t) * (HalfWidth + Shoulder) * rot);
+          }
+
+          DOUBLE
+            t1 = I.t1 + (I.t2 - I.t1) * (i - 1) / num,
+            t2 = I.t1 + (I.t2 - I.t1) * i / num;
+          vec n0(I.Normal(t1)), n1(I.Normal(t2)); 
+
+          DOUBLE angle = tsg::Rad2Deg(acos(min(0.999, max(-0.999, n0 & n1))));
+          INT anum = angle < MaxTurnAngle ? 1 : angle / MaxTurnAngle;
+          if (anum == 1)
+            NewRoadSegments.push_back(road_segment(first, second));
+          else
+          {
+            t = t1 + (t2 - t1) / anum;
+            Points.push_back(I(t) - I.Normal(t) * (HalfWidth + Shoulder) * rot);
+            NewRoadSegments.push_back(road_segment(first, Points.size() - 1));
+            for (INT j = 2; j < anum; j++)
+            {
+              t = t1 + (t2 - t1) * j / anum;
+              Points.push_back(I(t) - I.Normal(t) * (HalfWidth + Shoulder) * rot);
+              NewRoadSegments.push_back(road_segment(Points.size() - 2, Points.size() - 1));
+            }
+            NewRoadSegments.push_back(road_segment(Points.size() - 1, second));
+          }
+        }
+      }
+    } /* End of 'InterpolateRoadSegment' function */
+
+    /* Interpolate road segments function.                             
+     * ARGUMENTS:
+     *   - road segments:
+     *       std::vector<road_segment> &RoadSegments;
+     *   - road width and shoulder width:
+     *       DOUBLE HalfWidth, DOUBLE Shoulder;
+     * RETURNS: None.
+     */
+    VOID InterpolateRoadSegments( std::vector<road_segment> &RoadSegments, DOUBLE HalfWidth, DOUBLE Shoulder )
+    {
+      std::vector<road_segment> NewRoadSegments;
+      for (INT rs = 0; rs < RoadSegments.size(); rs++)
+        InterpolateRoadSegment(RoadSegments, NewRoadSegments, rs, HalfWidth, Shoulder);
+      RoadSegments = NewRoadSegments;
+    } /* End of 'InterpolateRoadSegments' function */
 
     /* Cut triangle function.
      * ARGUMENTS:
@@ -1312,19 +1672,19 @@ namespace tcg
         RoadSegments[rs].IsTexCoord[0] = RoadSegments[rs].IsTexCoord[1] = TRUE;
         RoadSegments[rs].TexCoord[0] = 0;
         RoadSegments[rs].TexCoord[1] =
-          (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 4 / 8;
+          (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 3 / 8;
       }
       else if (!RoadSegments[rs].IsTexCoord[0] && RoadSegments[rs].IsTexCoord[1])
       {
         RoadSegments[rs].IsTexCoord[0] = TRUE;
         RoadSegments[rs].TexCoord[0] = RoadSegments[rs].TexCoord[1] +
-          (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 4 / 8;
+          (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 3 / 8;
       }
       else if (RoadSegments[rs].IsTexCoord[0] && !RoadSegments[rs].IsTexCoord[1])
       {
         RoadSegments[rs].IsTexCoord[1] = TRUE;
         RoadSegments[rs].TexCoord[1] = RoadSegments[rs].TexCoord[0] +
-          (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 4 / 8;
+          (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 3 / 8;
       }
 
       INT nb, nbno;
@@ -1659,13 +2019,13 @@ namespace tcg
                              Points[RoadSegments[rs].P[1]],
                              Points[RoadSegments[rs].Border[LEFT][1]],
                              Points[RoadSegments[rs].Border[LEFT][0]]))
-          bias[RIGHT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 4 / 8;
+          bias[RIGHT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 3 / 8;
         else
-          bias[RIGHT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / -HalfWidth * 4 / 8;
+          bias[RIGHT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / -HalfWidth * 3 / 8;
         len[RIGHT] =
-          (Points[RoadSegments[rs].Border[RIGHT][1]] - Points[RoadSegments[rs].Border[RIGHT][0]]).Length2D() / HalfWidth * 4 / 8;
+          (Points[RoadSegments[rs].Border[RIGHT][1]] - Points[RoadSegments[rs].Border[RIGHT][0]]).Length2D() / HalfWidth * 3 / 8;
 
-        lenc = (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 4 / 8;
+        lenc = (Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 3 / 8;
 
         intr = LineIntersectLine(Points[RoadSegments[rs].P[0]], Points[RoadSegments[rs].P[1]] - Points[RoadSegments[rs].P[0]],
                                  Points[RoadSegments[rs].Border[LEFT][0]], -norm);
@@ -1676,11 +2036,11 @@ namespace tcg
                              Points[RoadSegments[rs].P[1]],
                              Points[RoadSegments[rs].Border[LEFT][1]],
                              Points[RoadSegments[rs].Border[LEFT][0]]))
-          bias[LEFT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 4 / 8;
+          bias[LEFT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / HalfWidth * 3 / 8;
         else
-          bias[LEFT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / -HalfWidth * 4 / 8;
+          bias[LEFT] = (intr - Points[RoadSegments[rs].P[0]]).Length2D() / -HalfWidth * 3 / 8;
         len[LEFT] =
-          (Points[RoadSegments[rs].Border[LEFT][1]] - Points[RoadSegments[rs].Border[LEFT][0]]).Length2D() / HalfWidth * 4 / 8;
+          (Points[RoadSegments[rs].Border[LEFT][1]] - Points[RoadSegments[rs].Border[LEFT][0]]).Length2D() / HalfWidth * 3 / 8;
 
         for (INT side = 0; side < 2; side++)
           for (INT no = 0; no < 2; no++)
@@ -1703,9 +2063,9 @@ namespace tcg
         RoadTriangles.push_back(triangle(RoadSegments[rs].Border[LEFT][0], RoadSegments[rs].Border[RIGHT][0], RoadSegments[rs].Border[RIGHT][1]));
         TextureCoords.push_back(
           tsg::TVec<uv>(
-            uv(0/* + 0.125*/, RoadSegments[rs].TexCoord[0] + factor * bias[LEFT]),
-            uv(1/* - 0.125*/, RoadSegments[rs].TexCoord[0] + factor * bias[RIGHT]),
-            uv(1/* - 0.125*/, RoadSegments[rs].TexCoord[0] + factor * (len[RIGHT] + bias[RIGHT]))
+            uv(0 + 0.125, RoadSegments[rs].TexCoord[0] + factor * bias[LEFT]),
+            uv(1 - 0.125, RoadSegments[rs].TexCoord[0] + factor * bias[RIGHT]),
+            uv(1 - 0.125, RoadSegments[rs].TexCoord[0] + factor * (len[RIGHT] + bias[RIGHT]))
           )
         );
         Heights.push_back(triangle(RoadSegments[rs].P[0], RoadSegments[rs].P[0], RoadSegments[rs].P[1]));
@@ -1725,9 +2085,9 @@ namespace tcg
         RoadTriangles.push_back(triangle(RoadSegments[rs].Border[LEFT][0], RoadSegments[rs].Border[RIGHT][1], RoadSegments[rs].Border[LEFT][1]));
         TextureCoords.push_back(
           tsg::TVec<uv>(
-            uv(0/* + 0.125*/, RoadSegments[rs].TexCoord[0] + factor * bias[LEFT]),
-            uv(1/* - 0.125*/, RoadSegments[rs].TexCoord[0] + factor * (len[RIGHT] + bias[RIGHT])),
-            uv(0/* + 0.125*/, RoadSegments[rs].TexCoord[0] + factor * (len[LEFT] + bias[LEFT]))
+            uv(0 + 0.125, RoadSegments[rs].TexCoord[0] + factor * bias[LEFT]),
+            uv(1 - 0.125, RoadSegments[rs].TexCoord[0] + factor * (len[RIGHT] + bias[RIGHT])),
+            uv(0 + 0.125, RoadSegments[rs].TexCoord[0] + factor * (len[LEFT] + bias[LEFT]))
           )
         );
         Heights.push_back(triangle(RoadSegments[rs].P[0], RoadSegments[rs].P[1], RoadSegments[rs].P[1]));
@@ -1749,9 +2109,9 @@ namespace tcg
           RoadTriangles.push_back(triangle(RoadSegments[rs].Border[LEFT][0], RoadSegments[rs].P[0], RoadSegments[rs].Border[RIGHT][0]));
           TextureCoords.push_back(
             tsg::TVec<uv>(
-              uv(0/* + 0.125*/, RoadSegments[rs].TexCoord[0] + factor * bias[LEFT]),
+              uv(0 + 0.125, RoadSegments[rs].TexCoord[0] + factor * bias[LEFT]),
               uv(0.5, RoadSegments[rs].TexCoord[0]),
-              uv(1/* - 0.125*/, RoadSegments[rs].TexCoord[0] + factor * bias[RIGHT])
+              uv(1 - 0.125, RoadSegments[rs].TexCoord[0] + factor * bias[RIGHT])
             )
           );
           Heights.push_back(triangle(RoadSegments[rs].P[0], RoadSegments[rs].P[0], RoadSegments[rs].P[0]));
@@ -1774,9 +2134,9 @@ namespace tcg
           RoadTriangles.push_back(triangle(RoadSegments[rs].Border[RIGHT][1], RoadSegments[rs].P[1], RoadSegments[rs].Border[LEFT][1]));
           TextureCoords.push_back(
             tsg::TVec<uv>(
-              uv(1/* - 0.125*/, RoadSegments[rs].TexCoord[0] + factor * (len[RIGHT] + bias[RIGHT])),
+              uv(1 - 0.125, RoadSegments[rs].TexCoord[0] + factor * (len[RIGHT] + bias[RIGHT])),
               uv(0.5, RoadSegments[rs].TexCoord[0] + factor * lenc),
-              uv(0/* + 0.125*/, RoadSegments[rs].TexCoord[0] + factor * (len[LEFT] + bias[LEFT]))
+              uv(0 + 0.125, RoadSegments[rs].TexCoord[0] + factor * (len[LEFT] + bias[LEFT]))
             )
           );
           Heights.push_back(triangle(RoadSegments[rs].P[1], RoadSegments[rs].P[1], RoadSegments[rs].P[1]));
@@ -1810,7 +2170,7 @@ namespace tcg
 
       std::vector<INT> RoofBorder, Ceil, Floor;
 
-      FLOAT RoofW = sqrt(0.2 * 0.2 + 0.35 * 0.35);
+      DOUBLE RoofW = sqrt(0.2 * 0.2 + 0.35 * 0.35);
 
       srand((INT)Ani->Time);
 
@@ -1879,7 +2239,7 @@ namespace tcg
         for (INT j = 0; j < Houses[i].size(); j++)
         {
           // Roof.
-          FLOAT len =
+          DOUBLE len =
             (LineIntersectLine(Points[Houses[i][j]],
                                vec(Points[Houses[i][(j + 1) % Houses[i].size()]].Z - Points[Houses[i][j]].Z, 0,
                                    Points[Houses[i][j]].X - Points[Houses[i][(j + 1) % Houses[i].size()]].X),
@@ -1915,7 +2275,7 @@ namespace tcg
 
           // Wall.
           vec WallDir = Points[Floor[(j + 1) % Houses[i].size()]] - Points[Floor[j]], WallDirNorm(WallDir.Normalizing());
-          FLOAT WallLength = WallDir.Length2D();
+          DOUBLE WallLength = WallDir.Length2D();
 
           HouseTriangles.push_back(triangle(Floor[j], Floor[(j + 1) % Houses[i].size()], Ceil[(j + 1) % Houses[i].size()]));
           IDs.push_back(triangle(2, 2, 2));
@@ -1934,7 +2294,7 @@ namespace tcg
           vec norm = vec(-WallDir.Z, 0, WallDir.X).Normalize() * 0.001;
           for (INT k = 0; k < NoofWindows; k++)
           {
-            FLOAT WindowCenter = (k + 0.5) / NoofWindows;
+            DOUBLE WindowCenter = (k + 0.5) / NoofWindows;
             for (INT n = 0; n < NoofFloors; n++)
             {
               Points.push_back(vec(Points[Floor[j]].X + WallDir.X * WindowCenter - WallDirNorm.X * 0.35 / 3,
@@ -2010,8 +2370,8 @@ namespace tcg
 
       IntersectRoadSegments(RoadSegments);
       SetRoadSegments(RoadSegments, HalfWidth, Shoulder);
-      RoundRoadSegments(RoadSegments, HalfWidth, Shoulder);
-      SetRoadSegments(RoadSegments, HalfWidth, Shoulder);
+      InterpolateRoadSegments(RoadSegments, HalfWidth, Shoulder);
+      SetRoadSegments(RoadSegments, HalfWidth, Shoulder );
       InsertRoad(RoadSegments);
       SetTextureCoordinates(RoadSegments, HalfWidth);
       TriangulateRoad(RoadSegments, HalfWidth);
