@@ -57,6 +57,7 @@ namespace tcg
       fwrite(&w, sizeof(int), 1, f);
       fwrite(&w, sizeof(int), 1, f);
       fwrite(npix, sizeof(tsg::TVec<short>), size, f);
+      fclose(f);
   
       delete[] npix;
       delete[] pix;

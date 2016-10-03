@@ -165,7 +165,7 @@ namespace tcg
 
         fseek(F, 0, SEEK_END);
         INT len;
-        if ((len = ftell(F)) == (w * h * sizeof(SHORT) * 3))
+        if ((len = ftell(F)) == (w * h * sizeof(SHORT) * 3 + 2 * sizeof(INT)))
         {
           SHORT *pix = new SHORT[w * h * 3];
           fseek(F, sizeof(INT) * 2, SEEK_SET);
