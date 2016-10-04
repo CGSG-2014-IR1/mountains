@@ -60,6 +60,15 @@ namespace tcg
       Show();
     } /* End of 'PopUp' function */
 
+    /* Pop up function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void Begone( void )
+    {
+      Hide();
+    } /* End of 'PopUp' function */
+
   private:
     double Num = 10;         // numerator
     int PosX = 0, PosY = 0;  // caret position

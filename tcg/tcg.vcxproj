@@ -95,7 +95,8 @@
     <ClCompile Include="anim\render\resource\texture.cpp" />
     <ClCompile Include="anim\unit.cpp" />
     <ClCompile Include="anim\units\unit_hm_preview.cpp" />
-    <ClCompile Include="anim\units\unit_road.cpp" />
+    <ClCompile Include="anim\units\unit_road\primitives.cpp" />
+    <ClCompile Include="anim\units\unit_road\unit_road.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\cd.cpp" />
     <ClCompile Include="math\cd_plane.cpp" />
@@ -122,7 +123,11 @@
     <ClInclude Include="anim\timer.h" />
     <ClInclude Include="anim\unit.h" />
     <ClInclude Include="anim\units\unit_hm_preview.h" />
-    <ClInclude Include="anim\units\unit_road.h" />
+    <ClInclude Include="anim\units\unit_road\interpolation.h" />
+    <ClInclude Include="anim\units\unit_road\intersection.h" />
+    <ClInclude Include="anim\units\unit_road\primitives.h" />
+    <ClInclude Include="anim\units\unit_road\segment.h" />
+    <ClInclude Include="anim\units\unit_road\unit_road.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="math\cd.h" />
     <ClInclude Include="math\computational_geometry.h" />

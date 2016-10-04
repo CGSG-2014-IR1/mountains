@@ -25,7 +25,7 @@
 #include "../../win/window_list.h"
 #include "../../math/noise.h"
 #include "../../support/hm_gen.h"
-#include "unit_road.h"
+#include "unit_road/unit_road.h"
 
 /* Computational geometry project namespace */
 namespace tcg
@@ -38,6 +38,50 @@ namespace tcg
     float H, Lacunarity, Octaves, Offset, Gain, FSeed;
     window_list Interface;
     bool Rend, N;
+
+    int Load( void )
+    {
+      FILE *F = fopen("bin/input/fractal.data", "rb");
+
+      if (F == nullptr)
+        return 0;
+
+      char c;
+      int cnt = 0;
+      float pars[8];
+      while ((c = fgetc(F)) != EOF)
+      {
+        if (c == ';')
+        {
+          char Buf[400];
+          fgets(Buf, 399, F);
+          continue;
+        }
+        ungetc(c, F);
+        fscanf(F, "%f", &pars[cnt]);
+        if (cnt == 0)
+          if (pars[0] == 0)
+          {
+            fclose(F);
+            return 0;
+          }
+        if (cnt == 1)
+          if (pars[1] == 0)
+          {
+            fclose(F);
+            return 2;
+          }
+        cnt++;
+      }
+      H = pars[2];
+      Octaves = pars[3];
+      Lacunarity = pars[4];
+      Gain = pars[5];
+      Offset = pars[6];
+      FSeed = pars[7];
+      fclose(F);
+      return 1;
+    }
 
     void Gen( void )
     {

@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Windows dependent">
       <UniqueIdentifier>{5d2e9cd0-a04c-4cfd-9680-13c49c694710}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Animation\Units\Roads">
+      <UniqueIdentifier>{b1aa2510-3b54-4582-9e14-964cca2dfae4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,9 +65,6 @@
     </ClCompile>
     <ClCompile Include="anim\input.cpp">
       <Filter>Source Files\Animation\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="anim\units\unit_road.cpp">
-      <Filter>Source Files\Animation\Units</Filter>
     </ClCompile>
     <ClCompile Include="anim\render\primitive.cpp">
       <Filter>Source Files\Animation\Render</Filter>
@@ -123,6 +123,12 @@
     <ClCompile Include="anim\units\unit_hm_preview.cpp">
       <Filter>Source Files\Animation\Units</Filter>
     </ClCompile>
+    <ClCompile Include="anim\units\unit_road\unit_road.cpp">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
+    </ClCompile>
+    <ClCompile Include="anim\units\unit_road\primitives.cpp">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">
@@ -139,9 +145,6 @@
     </ClInclude>
     <ClInclude Include="anim\input.h">
       <Filter>Source Files\Animation\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="anim\units\unit_road.h">
-      <Filter>Source Files\Animation\Units</Filter>
     </ClInclude>
     <ClInclude Include="anim\render\primitive.h">
       <Filter>Source Files\Animation\Render</Filter>
@@ -244,6 +247,21 @@
     </ClInclude>
     <ClInclude Include="anim\units\unit_hm_preview.h">
       <Filter>Source Files\Animation\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_road\unit_road.h">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_road\interpolation.h">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_road\segment.h">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_road\intersection.h">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
+    </ClInclude>
+    <ClInclude Include="anim\units\unit_road\primitives.h">
+      <Filter>Source Files\Animation\Units\Roads</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

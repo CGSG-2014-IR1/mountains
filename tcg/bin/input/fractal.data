@@ -1,0 +1,17 @@
+; Format:
+; <bool> If should be loaded at start (this will skip preview)    default: 1
+; <bool> If should be generated at start                          default: 0
+; <float> Fractal dimension (max roughness)                       default: 0.8
+; <float> Octaves                                                 default: 4.0
+; <float> Lacunarity                                              default: 5.0
+; <float> Gain                                                    default: 1.5
+; <float> Offset                                                  default: 1.0
+; <int> Seed                                                      default: 3059
+1
+0
+0.75
+4.0
+5.0
+1.5
+1.0
+3059

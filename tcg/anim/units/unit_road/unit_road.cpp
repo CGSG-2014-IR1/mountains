@@ -17,282 +17,10 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "../../def.h"
+#include "../../../def.h"
 
-#include "../animation.h"
-#include "../../math/noise.h"
+#include "../../animation.h"
 #include "unit_road.h"
-
-/* Create mountain function.
- * ARGUMENTS:
- *   - animation:
- *       anim *Ani;
- *   - points:
- *       const std::vector<vec> &Points;
- *   - triangles:
- *       const std::vector<math::triangle> &Triangles;
- *   - IDs:
- *       const std::vector<math::triangle> &IDs;
- * RETURNS: None.
- */
-VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
-        const std::vector<math::triangle> &Triangles, const std::vector<INT> &IDs )
-{
-  Tri.DeleteBuffers();
-  vertex *V = new vertex[Points.size()];
-  INT *I = new INT[Triangles.size() * 3];
-
-  for (INT i = 0; i < Points.size(); i++)
-  {
-    V[i].Pos = Points[i];
-    V[i].UV = uv(V[i].Pos.X / 2, -V[i].Pos.Z / 2);
-    V[i].ID = IDs[i];
-  }
-  for (INT i = 0; i < Triangles.size(); i++)
-  {
-    I[i * 3] =     Triangles[i].P[0];
-    I[i * 3 + 1] = Triangles[i].P[1];
-    I[i * 3 + 2] = Triangles[i].P[2];
-  }
-
-  Tri.SetBuffers(V, I, Points.size(), Triangles.size() * 3);
-
-  Tri.Material = Ani->AddMaterial("mountain", "mountain");
-  Tri.Material->SetUniform("Height", 4.0f);
-  Tri.Material->AddTexture(Ani->AddTexture("TextureHeight", "heightmap1.float"));
-  Tri.Material->AddTexture(Ani->AddTexture("Texture", "mountain_light.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("ColorMap", "cm.g24"));
-  Tri.Material->AddTexture(Ani->AddTexture("NormalMap", "normalmap1.short"));
-
-  float
-    octaves = 4,
-    lacunarity = 4.5,
-    H = 2.2;
-  Tri.Material->SetUniform(         "H", H);
-  Tri.Material->SetUniform(      "gain", 2.0f);
-  Tri.Material->SetUniform("lacunarity", lacunarity);
-  Tri.Material->SetUniform(   "octaves", octaves);
-  Tri.Material->SetUniform(    "offset", 0.0f);
-  float *exponent_array = new float[(int)octaves];
-  float frequency = 1.0f;
-  for (int i = 0; i < (int)octaves; i++)
-  {
-    exponent_array[i] = pow(frequency, -H);
-    frequency *= lacunarity;
-  }
-  Tri.Material->AddTexture(Ani->AddTexture("ExponentArray", (int)octaves, 1, exponent_array));
-  delete[] exponent_array;
-
-  math::noise Noise;
-  float *pix = new float[Noise.GetSize() * 2];
-  for (int i = 0; i < Noise.GetSize(); i++)
-  {
-    pix[i] = Noise.GetTable(i);
-    pix[i + Noise.GetSize()] = Noise.GetPerm(i);
-  }
-  Tri.Material->AddTexture(Ani->AddTexture("NoiseTex", Noise.GetSize(), 2, pix));
-  delete[] pix;
-
-  delete V;
-  delete I;
-} /* End of 'tcg::unit_road::CreateMountain' function */
-
-/* Create mountain function.
- * ARGUMENTS:
- *   - animation:
- *       anim *Ani;
- *   - points:
- *       const std::vector<vec> &Points;
- *   - triangles:
- *       const std::vector<math::triangle> &Triangles;
- *   - IDs:
- *       const std::vector<math::triangle> &IDs;
- *   - height identifiers:
- *       const std::vector<math::triangle> &P0, &P1, &H0, &H1;
- * RETURNS: None.
- */
-VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
-  const std::vector<math::triangle> &Triangles, const std::vector<INT> &IDs,
-  const std::vector<INT> &P0, const std::vector<INT> &P1, const std::vector<INT> &H0, const std::vector<INT> &H1 )
-{
-  Tri.DeleteBuffers();
-
-  vertex *V = new vertex[Points.size()];
-  INT *I = new INT[Triangles.size() * 3];
-
-  for (INT i = 0; i < Points.size(); i++)
-  {
-    V[i].Pos = Points[i];
-    V[i].UV = uv(V[i].Pos.X / 2, -V[i].Pos.Z / 2);
-    V[i].ID = IDs[i];
-    if (V[i].ID == 1)
-    {
-      V[i].P0 = uv(Points[P0[i]].X / Width, Points[P0[i]].Z / Width);
-      V[i].P1 = uv(Points[P1[i]].X / Width, Points[P1[i]].Z / Width);
-      V[i].H0 = uv(Points[H0[i]].X / Width, Points[H0[i]].Z / Width);
-      V[i].H1 = uv(Points[H1[i]].X / Width, Points[H1[i]].Z / Width);
-    }
-  }
-  for (INT i = 0; i < Triangles.size(); i++)
-  {
-    I[i * 3] =     Triangles[i].P[0];
-    I[i * 3 + 1] = Triangles[i].P[1];
-    I[i * 3 + 2] = Triangles[i].P[2];
-  }
-
-  Tri.SetBuffers(V, I, Points.size(), Triangles.size() * 3);
-
-  Tri.Material = Ani->AddMaterial("mountain", "mountain");
-  Tri.Material->AddTexture(Ani->AddTexture("height", "mountain_height.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("light", "mountain_light.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("ColorMap", "cm.g24"));
-
-  delete V;
-  delete I;
-} /* End of 'tcg::unit_road::CreateMountain' function */
-
-/* Create road function.
- * ARGUMENTS:
- *   - animation:
- *       anim *Ani;
- *   - points:
- *       const std::vector<vec> &Points;
- *   - triangles:
- *       const std::vector<math::triangle> &Triangles;
- *   - texture coordinates:
- *       const std::vector<tsg::TVec<uv>> &TextureCoords;
- *   - heights:
- *       const std::vector<INT> &Heights;
- *   - height identifiers:
- *       const std::vector<math::triangle> &P0, &P1, &H0, &H1;
- * RETURNS: None.
- */
-VOID tcg::unit_road::CreateRoad( tcg::primitive::trimesh &Tri, anim *Ani, const std::vector<vec> &Points, const std::vector<math::triangle> &Triangles,
-  const std::vector<tsg::TVec<uv>> &TextureCoords, const std::vector<math::triangle> &Heights,
-  const std::vector<math::triangle> &P0, const std::vector<math::triangle> &P1,
-  const std::vector<math::triangle> &H0, const std::vector<math::triangle> &H1 )
-{
-  Tri.DeleteBuffers();
-
-  vertex *V = new vertex[Triangles.size() * 3];
-  INT *I = new INT[Triangles.size() * 3];
-
-  for (INT i = 0; i < Triangles.size(); i++)
-  {
-    V[i * 3].Pos =     Points[Triangles[i].P[0]];
-    V[i * 3 + 1].Pos = Points[Triangles[i].P[1]];
-    V[i * 3 + 2].Pos = Points[Triangles[i].P[2]];
-
-    V[i * 3].Norm = V[i * 3 + 1].Norm = V[i * 3 + 2].Norm = vec(0, 1, 0);
-
-    V[i * 3].UV =     TextureCoords[i].X;
-    V[i * 3 + 1].UV = TextureCoords[i].Y;
-    V[i * 3 + 2].UV = TextureCoords[i].Z;
-
-    V[i * 3].Height =     uv(Points[Heights[i].P[0]].X / Width, Points[Heights[i].P[0]].Z / Width);
-    V[i * 3 + 1].Height = uv(Points[Heights[i].P[1]].X / Width, Points[Heights[i].P[1]].Z / Width);
-    V[i * 3 + 2].Height = uv(Points[Heights[i].P[2]].X / Width, Points[Heights[i].P[2]].Z / Width);
-
-    V[i * 3].P0 =     uv(Points[P0[i].P[0]].X / Width, Points[P0[i].P[0]].Z / Width);
-    V[i * 3 + 1].P0 = uv(Points[P0[i].P[1]].X / Width, Points[P0[i].P[1]].Z / Width);
-    V[i * 3 + 2].P0 = uv(Points[P0[i].P[2]].X / Width, Points[P0[i].P[2]].Z / Width);
-
-    V[i * 3].P1 =     uv(Points[P1[i].P[0]].X / Width, Points[P1[i].P[0]].Z / Width);
-    V[i * 3 + 1].P1 = uv(Points[P1[i].P[1]].X / Width, Points[P1[i].P[1]].Z / Width);
-    V[i * 3 + 2].P1 = uv(Points[P1[i].P[2]].X / Width, Points[P1[i].P[2]].Z / Width);
-
-    V[i * 3].H0 =     uv(Points[H0[i].P[0]].X / Width, Points[H0[i].P[0]].Z / Width);
-    V[i * 3 + 1].H0 = uv(Points[H0[i].P[1]].X / Width, Points[H0[i].P[1]].Z / Width);
-    V[i * 3 + 2].H0 = uv(Points[H0[i].P[2]].X / Width, Points[H0[i].P[2]].Z / Width);
-
-    V[i * 3].H1 =     uv(Points[H1[i].P[0]].X / Width, Points[H1[i].P[0]].Z / Width);
-    V[i * 3 + 1].H1 = uv(Points[H1[i].P[1]].X / Width, Points[H1[i].P[1]].Z / Width);
-    V[i * 3 + 2].H1 = uv(Points[H1[i].P[2]].X / Width, Points[H1[i].P[2]].Z / Width);
-
-    I[i * 3] =     i * 3;
-    I[i * 3 + 1] = i * 3 + 1;
-    I[i * 3 + 2] = i * 3 + 2;
-  }
-
-  Tri.SetBuffers(V, I, Triangles.size() * 3, Triangles.size() * 3);
-
-  Tri.Material = Ani->AddMaterial("road", "road");
-  Tri.Material->AddTexture(Ani->AddTexture("road", "road.jpg"));
-  Tri.Material->SetUniform("Height", 4.0f);
-  Tri.Material->AddTexture(Ani->AddTexture("TextureHeight", "heightmap1.float"));
-  Tri.Material->AddTexture(Ani->AddTexture("light", "mountain_light.jpg"));
-
-  delete V;
-  delete I;
-} /* End of 'tcg::unit_road::CreateRoad' function */
-
-/* Create village function.
- * ARGUMENTS:
- *   - animation:
- *       anim *Ani;
- *   - points:
- *       const std::vector<vec> &Points;
- *   - triangles:
- *       const std::vector<math::triangle> &Triangles;
- *   - IDs:
- *       const std::vector<math::triangle> &IDs;
- *   - texture coordinates:
- *       const std::vector<tsg::TVec<uv>> &TextureCoords;
- *   - heights:
- *       const std::vector<INT> &Heights;
- * RETURNS: None.
- */
-VOID tcg::unit_road::CreateVillage( tcg::primitive::patch3 &Tri, anim *Ani, const std::vector<vec> &Points,
-  const std::vector<math::triangle> &Triangles, const std::vector<math::triangle> &IDs,
-  const std::vector<tsg::TVec<uv>> &TextureCoords, const std::vector<INT> &Heights )
-{
-  Tri.DeleteBuffers();
-
-  vertex *V = new vertex[Triangles.size() * 3];
-  INT *I = new INT[Triangles.size() * 3];
-
-  for (INT i = 0; i < Triangles.size(); i++)
-  {
-    V[i * 3].Pos =     Points[Triangles[i].P[0]];
-    V[i * 3 + 1].Pos = Points[Triangles[i].P[1]];
-    V[i * 3 + 2].Pos = Points[Triangles[i].P[2]];
-
-    V[i * 3].Norm = V[i * 3 + 1].Norm = V[i * 3 + 2].Norm =
-      ((Points[Triangles[i].P[1]] - Points[Triangles[i].P[0]]) %
-       (Points[Triangles[i].P[2]] - Points[Triangles[i].P[0]])).Normalize();
-
-    V[i * 3].UV =     TextureCoords[i].X;
-    V[i * 3 + 1].UV = TextureCoords[i].Y;
-    V[i * 3 + 2].UV = TextureCoords[i].Z;
-
-    V[i * 3].Height = V[i * 3 + 1].Height = V[i * 3 + 2].Height =
-      uv(Points[Heights[i]].X / 60, Points[Heights[i]].Z / 60);
-
-    V[i * 3].ID =     IDs[i].P[0];
-    V[i * 3 + 1].ID = IDs[i].P[1];
-    V[i * 3 + 2].ID = IDs[i].P[2];
-
-    I[i * 3] =     i * 3;
-    I[i * 3 + 1] = i * 3 + 1;
-    I[i * 3 + 2] = i * 3 + 2;
-  }
-
-  Tri.SetBuffers(V, I, Triangles.size() * 3, Triangles.size() * 3);
-
-  Tri.Material = Ani->AddMaterial("house", "house");
-  Tri.Material->AddTexture(Ani->AddTexture("roof", "roof.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("flat_roof", "flat_roof.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("wall", "wall.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("window", "window.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("concrete", "concrete.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("concrete_panels", "concrete_panels.jpg"));
-  Tri.Material->AddTexture(Ani->AddTexture("height", "mountain_height.jpg"));
-
-  delete V;
-  delete I;
-} /* End of 'tcg::unit_road::CreateVillage' function */
-
-#include "../../resource.h"
 
 /* Class constructor.
  * ARGUMENTS:
@@ -325,14 +53,8 @@ tcg::unit_road::unit_road( anim *Ani ) :
   AddPoint(vec(60, 0,  0));
   AddPoint(vec(60, 0, 60));
   AddPoint(vec(0,  0, 60));
-  //for (INT i = 0; i <= 32; i += 1)
-  //  for (INT j = 0; j <= 32; j += 1)
-  //    AddPoint(vec(i / 32.0 * Width, 0, j / 32.0 * Height));
 
   math::Triangulate(Points, Triangles);
-
-  //AddSegment(vec(-10 + 30, 0, 0 + 30), vec(10 + 30, 0, 0 + 30));
-  //AddSegment(vec(0 + 30, 0, -10 + 30), vec(0 + 30, 0, 10 + 30));
 
   std::vector<INT> IDs;
   for (INT i = 0; i < Points.size(); i++)
@@ -487,12 +209,6 @@ VOID tcg::unit_road::Response( VOID )
         Ani->Camera.SetLookAtLocUp(LookAt + vec(0, cos(tsg::Deg2Rad(Angle)) * Dist, sin(tsg::Deg2Rad(Angle)) * Dist),
                                    LookAt, vec(0.0, 1.0, 0.0));
       }
-    //if (Angle == 0)
-    //{
-    //  Angle += 5;
-    //  Ani->Camera.SetLookAtLocUp(LookAt + vec(0, cos(tsg::Deg2Rad(Angle)) * Dist, sin(tsg::Deg2Rad(Angle)) * Dist),
-    //    LookAt, vec(0.0, 1.0, 0.0));
-    //}
     if (Ani->Keys[VK_UP])
       Ani->Camera.SetLookAtLocUp(Ani->Camera.Loc + vec(0, Ani->DeltaTime * 20, 0),
                                  cd::plane(vec(0, 0, 0),
@@ -785,19 +501,6 @@ VOID tcg::unit_road::Render( VOID )
       }
     glEnd();
 
-    //if (EditMode == EDIT_TRIANGLES)
-    //{
-    //  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //  glBegin(GL_TRIANGLES);
-    //  glColor3d(1.0, 1.0, 1.0);
-    //  for (INT i = 0; i < Triangles.size(); i++)
-    //    for (INT j = 0; j < 3; j++)
-    //      glVertex2d(Points[Triangles[i].P[j]].X / (Width / 2) - 1, -Points[Triangles[i].P[j]].Z / (Height / 2) + 1);
-    //  glEnd();
-    //  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //}
-    //glLineWidth(1);
-
     glPopMatrix();
 
     glFinish();
@@ -848,5 +551,227 @@ VOID tcg::unit_road::AddSegment( const vec &P0, const vec &P1 )
     Points.push_back(P1), I1 = Points.size() - 1;
   Segments.push_back(segment(I0, I1));
 } /* End of 'tcg::unit_road::AddSegment' function */
+
+/* Build houses function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+VOID tcg::unit_road::BuildHouses( VOID )
+{
+  std::vector<triangle> HouseTriangles, TmpTriangles;
+  std::vector<triangle> IDs;
+  std::vector<INT> Heights;
+  std::vector<tsg::TVec<uv>> TexCoords;
+
+  std::vector<INT> RoofBorder, Ceil, Floor;
+
+  DOUBLE RoofW = sqrt(0.2 * 0.2 + 0.35 * 0.35);
+
+  srand((INT)Ani->Time);
+
+  for (INT i = 0; i < Houses.size(); i++)
+  {
+    INT NoofFloors = ::rand() % 3 + 1;
+
+    TmpTriangles.clear();
+    RoofBorder.clear();
+    Ceil.clear();
+    Floor.clear();
+    Triangulate(Points, Houses[i], TmpTriangles);
+    vec Center(0);
+    for (INT j = 0; j < Houses[i].size(); j++)
+    {
+      Center += Points[Houses[i][j]];
+      Points[Houses[i][j]].Y = 0.4 + 0.7 * NoofFloors + 0.3;
+    }
+    INT CenterNo = Points.size();
+    Points.push_back(Center / Houses[i].size());
+    // Flat roof.
+    for (INT j = 0; j < TmpTriangles.size(); j++)
+    {
+      HouseTriangles.push_back(TmpTriangles[j]);
+      IDs.push_back(triangle(0, 0, 0));
+      Heights.push_back(CenterNo);
+      TexCoords.push_back(
+        tsg::TVec<uv>(
+          uv(Points[HouseTriangles.back().P[0]].X / Width, Points[HouseTriangles.back().P[0]].Z / Height),
+          uv(Points[HouseTriangles.back().P[1]].X / Width, Points[HouseTriangles.back().P[1]].Z / Height),
+          uv(Points[HouseTriangles.back().P[2]].X / Width, Points[HouseTriangles.back().P[2]].Z / Height)
+        )
+      );
+    }
+    for (INT j = 0; j < Houses[i].size(); j++)
+    {
+      vec
+        Cur = Points[Houses[i][j]],
+        PrevDir = Cur - Points[Houses[i][j == 0 ? Houses[i].size() - 1 : j - 1]],
+        NextDir = Points[Houses[i][(j + 1) % Houses[i].size()]] - Cur,
+        Dir = LineIntersectLine(vec(-PrevDir.Z, 0, PrevDir.X).Normalize(), PrevDir,
+                                vec(-NextDir.Z, 0, NextDir.X).Normalize(), NextDir);
+      RoofBorder.push_back(Points.size());
+      Points.push_back(vec(Cur.X + Dir.X * 0.2, 0.4 + 0.7 * NoofFloors - 0.05, Cur.Z + Dir.Z * 0.2));
+      Ceil.push_back(Points.size());
+      Points.push_back(vec(Cur.X + Dir.X * 0.15, 0.4 + 0.7 * NoofFloors, Cur.Z + Dir.Z * 0.15));
+      Floor.push_back(Points.size());
+      Points.push_back(vec(Cur.X + Dir.X * 0.15, 0.4, Cur.Z + Dir.Z * 0.15));
+    }
+
+    TmpTriangles.clear();
+    Triangulate(Points, Floor, TmpTriangles);
+    for (INT j = 0; j < TmpTriangles.size(); j++)
+    {
+      HouseTriangles.push_back(triangle(TmpTriangles[j].P[2], TmpTriangles[j].P[1], TmpTriangles[j].P[0]));
+      IDs.push_back(triangle(4, 4, 4));
+      Heights.push_back(CenterNo);
+      TexCoords.push_back(
+        tsg::TVec<uv>(
+          uv(Points[HouseTriangles.back().P[0]].X, Points[HouseTriangles.back().P[0]].Z),
+          uv(Points[HouseTriangles.back().P[1]].X, Points[HouseTriangles.back().P[1]].Z),
+          uv(Points[HouseTriangles.back().P[2]].X, Points[HouseTriangles.back().P[2]].Z)
+        )
+      );
+    }
+    for (INT j = 0; j < Houses[i].size(); j++)
+    {
+      // Roof.
+      DOUBLE len =
+        (LineIntersectLine(Points[Houses[i][j]],
+                           vec(Points[Houses[i][(j + 1) % Houses[i].size()]].Z - Points[Houses[i][j]].Z, 0,
+                               Points[Houses[i][j]].X - Points[Houses[i][(j + 1) % Houses[i].size()]].X),
+                           Points[RoofBorder[j]],
+                           Points[RoofBorder[(j + 1) % Houses[i].size()]] - Points[RoofBorder[j]]) -
+         Points[RoofBorder[j]]).Length2D();
+      if (((Points[RoofBorder[(j + 1) % Houses[i].size()]] - Points[RoofBorder[j]]).Normalize() &
+          (Points[Houses[i][j]] - Points[RoofBorder[j]]).Normalize()) < 0)
+        len = -len;
+
+      HouseTriangles.push_back(triangle(RoofBorder[j],
+                                        RoofBorder[(j + 1) % Houses[i].size()],
+                                        Houses[i][(j + 1) % Houses[i].size()]));
+      IDs.push_back(triangle(1, 1, 1));
+      Heights.push_back(CenterNo);
+      TexCoords.push_back(
+        tsg::TVec<uv>(
+          uv(0, 0),
+          uv((Points[RoofBorder[(j + 1) % Houses[i].size()]] - Points[RoofBorder[j]]).Length2D() / RoofW, 0),
+          uv((len + (Points[Houses[i][(j + 1) % Houses[i].size()]] - Points[Houses[i][j]]).Length2D()) / RoofW, 1)
+        )
+      );
+      HouseTriangles.push_back(triangle(RoofBorder[j], Houses[i][(j + 1) % Houses[i].size()], Houses[i][j]));
+      IDs.push_back(triangle(1, 1, 1));
+      Heights.push_back(CenterNo);
+      TexCoords.push_back(
+        tsg::TVec<uv>(
+          uv(0, 0),
+          uv((len + (Points[Houses[i][(j + 1) % Houses[i].size()]] - Points[Houses[i][j]]).Length2D()) / RoofW, 1),
+          uv(len / RoofW, 1)
+        )
+      );
+
+      // Wall.
+      vec WallDir = Points[Floor[(j + 1) % Houses[i].size()]] - Points[Floor[j]], WallDirNorm(WallDir.Normalizing());
+      DOUBLE WallLength = WallDir.Length2D();
+
+      HouseTriangles.push_back(triangle(Floor[j], Floor[(j + 1) % Houses[i].size()], Ceil[(j + 1) % Houses[i].size()]));
+      IDs.push_back(triangle(2, 2, 2));
+      Heights.push_back(CenterNo);
+      TexCoords.push_back(tsg::TVec<uv>(uv(0, 0),
+                                        uv(WallLength / 0.7 * 4 / 3, 0),
+                                        uv(WallLength / 0.7 * 4 / 3, 2 * NoofFloors)));
+
+      HouseTriangles.push_back(triangle(Floor[j], Ceil[(j + 1) % Houses[i].size()], Ceil[j]));
+      IDs.push_back(triangle(2, 2, 2));
+      Heights.push_back(CenterNo);
+      TexCoords.push_back(tsg::TVec<uv>(uv(0, 0), uv(WallLength / 0.7 * 4 / 3, 2 * NoofFloors), uv(0, 2 * NoofFloors)));
+
+      // Windows.
+      INT NoofWindows = WallLength / 0.5;
+      vec norm = vec(-WallDir.Z, 0, WallDir.X).Normalize() * 0.001;
+      for (INT k = 0; k < NoofWindows; k++)
+      {
+        DOUBLE WindowCenter = (k + 0.5) / NoofWindows;
+        for (INT n = 0; n < NoofFloors; n++)
+        {
+          Points.push_back(vec(Points[Floor[j]].X + WallDir.X * WindowCenter - WallDirNorm.X * 0.35 / 3,
+                               0.4 + 0.2 + 0.7 * n,
+                               Points[Floor[j]].Z + WallDir.Z * WindowCenter - WallDirNorm.Z * 0.35 / 3) + norm);
+          Points.push_back(vec(Points[Floor[j]].X + WallDir.X * WindowCenter + WallDirNorm.X * 0.35 / 3,
+                               0.4 + 0.2 + 0.7 * n,
+                               Points[Floor[j]].Z + WallDir.Z * WindowCenter + WallDirNorm.Z * 0.35 / 3) + norm);
+          Points.push_back(vec(Points[Floor[j]].X + WallDir.X * WindowCenter + WallDirNorm.X * 0.35 / 3,
+                               0.4 + 0.55 + 0.7 * n,
+                               Points[Floor[j]].Z + WallDir.Z * WindowCenter + WallDirNorm.Z * 0.35 / 3) + norm);
+          Points.push_back(vec(Points[Floor[j]].X + WallDir.X * WindowCenter - WallDirNorm.X * 0.35 / 3,
+                               0.4 + 0.55 + 0.7 * n,
+                               Points[Floor[j]].Z + WallDir.Z * WindowCenter - WallDirNorm.Z * 0.35 / 3) + norm);
+
+          HouseTriangles.push_back(triangle(Points.size() - 4, Points.size() - 3, Points.size() - 2));
+          IDs.push_back(triangle(3, 3, 3));
+          Heights.push_back(CenterNo);
+          TexCoords.push_back(tsg::TVec<uv>(uv(0, 0), uv(1, 0), uv(1, 1)));
+
+          HouseTriangles.push_back(triangle(Points.size() - 4, Points.size() - 2, Points.size() - 1));
+          IDs.push_back(triangle(3, 3, 3));
+          Heights.push_back(CenterNo);
+          TexCoords.push_back(tsg::TVec<uv>(uv(0, 0), uv(1, 1), uv(0, 1)));
+        }
+      }
+      // Pile.
+      Points.push_back(vec(Points[Houses[i][j]].X - 0.05,  -4, Points[Houses[i][j]].Z + 0.05));
+      Points.push_back(vec(Points[Houses[i][j]].X + 0.05,  -4, Points[Houses[i][j]].Z + 0.05));
+      Points.push_back(vec(Points[Houses[i][j]].X + 0.05,  -4, Points[Houses[i][j]].Z - 0.05));
+      Points.push_back(vec(Points[Houses[i][j]].X - 0.05,  -4, Points[Houses[i][j]].Z - 0.05));
+
+      Points.push_back(vec(Points[Houses[i][j]].X - 0.05, 0.4, Points[Houses[i][j]].Z + 0.05));
+      Points.push_back(vec(Points[Houses[i][j]].X + 0.05, 0.4, Points[Houses[i][j]].Z + 0.05));
+      Points.push_back(vec(Points[Houses[i][j]].X + 0.05, 0.4, Points[Houses[i][j]].Z - 0.05));
+      Points.push_back(vec(Points[Houses[i][j]].X - 0.05, 0.4, Points[Houses[i][j]].Z - 0.05));
+
+      for (INT k = 0; k < 8; k++)
+        Heights.push_back(CenterNo);
+      for (INT k = 0; k < 4; k++)
+      {
+        TexCoords.push_back(tsg::TVec<uv>(uv(0, 0), uv(0.25, 0), uv(0.25, 0)));
+        TexCoords.push_back(tsg::TVec<uv>(uv(0, 0), uv(0.25, 0), uv(0, 0)));
+
+        IDs.push_back(triangle(6, 6, 5));
+        IDs.push_back(triangle(6, 5, 5));
+      }
+      HouseTriangles.push_back(triangle(Points.size() - 8, Points.size() - 7, Points.size() - 3));
+      HouseTriangles.push_back(triangle(Points.size() - 8, Points.size() - 3, Points.size() - 4));
+
+      HouseTriangles.push_back(triangle(Points.size() - 7, Points.size() - 6, Points.size() - 2));
+      HouseTriangles.push_back(triangle(Points.size() - 7, Points.size() - 2, Points.size() - 3));
+
+      HouseTriangles.push_back(triangle(Points.size() - 6, Points.size() - 5, Points.size() - 1));
+      HouseTriangles.push_back(triangle(Points.size() - 6, Points.size() - 1, Points.size() - 2));
+
+      HouseTriangles.push_back(triangle(Points.size() - 5, Points.size() - 8, Points.size() - 4));
+      HouseTriangles.push_back(triangle(Points.size() - 5, Points.size() - 4, Points.size() - 1));
+    }
+  }
+  CreateVillage(Village, Ani, Points, HouseTriangles, IDs, TexCoords, Heights);
+} /* End of 'BuildHouses' function */
+
+/* Create landscape function.
+ * ARGUMENTS:
+ *   - road width and shoulder width:
+ *       DOUBLE HalfWidth, Shoulder;
+ * RETURN: None.
+ */
+VOID tcg::unit_road::CreateLandscape( DOUBLE HalfWidth, DOUBLE Shoulder )
+{
+  std::vector<road_segment> RoadSegments;
+
+  IntersectRoadSegments(RoadSegments);
+  SetRoadSegments(RoadSegments, HalfWidth, Shoulder);
+  InterpolateRoadSegments(RoadSegments, HalfWidth, Shoulder);
+  SetRoadSegments(RoadSegments, HalfWidth, Shoulder );
+  InsertRoad(RoadSegments);
+  SetTextureCoordinates(RoadSegments, HalfWidth);
+  TriangulateRoad(RoadSegments, HalfWidth);
+  TriangulateRoadShoulder(RoadSegments);
+  BuildHouses();
+} /* End of 'CreateLandscape' function */
 
 /* END OF 'unit_road.cpp' FILE */
