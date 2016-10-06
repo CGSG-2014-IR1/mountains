@@ -35,6 +35,7 @@ namespace tcg
   {
   private:
     fBm_multi_ridged fBm;
+    int IfTess;
 
     #include "primitives.h"
 

@@ -36,7 +36,7 @@ namespace tcg
       fwrite(&w, sizeof(int), 1, f);
       fwrite(pix, sizeof(float), size, f);
       fclose(f);
-  
+
       w = 4096;
       size = w * w;
       float step = 1.0 / w;

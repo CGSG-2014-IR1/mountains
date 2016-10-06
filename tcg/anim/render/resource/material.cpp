@@ -90,18 +90,9 @@ VOID tcg::material::Apply( anim *Ani )
     glUniform1f(loc, Ani->Time);
 
   /* Setup illumination coefficients */
-  loc = glGetUniformLocation(Shader->Program, "Ka");
+  loc = glGetUniformLocation(Shader->Program, "CameraPos");
   if (loc != -1)
-    glUniform3fv(loc, 1, &Ka[0]);
-  loc = glGetUniformLocation(Shader->Program, "Kd");
-  if (loc != -1)
-    glUniform3fv(loc, 1, &Kd[0]);
-  loc = glGetUniformLocation(Shader->Program, "Ks");
-  if (loc != -1)
-    glUniform3fv(loc, 1, &Ks[0]);
-  loc = glGetUniformLocation(Shader->Program, "Shininess");
-  if (loc != -1)
-    glUniform1f(loc, Shininess);
+    glUniform3fv(loc, 1, &Ani->Camera.Loc.X);
 
   /* Setup general uniforms */
   for (auto &i : UnifFloat)

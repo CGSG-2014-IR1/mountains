@@ -2,7 +2,8 @@
 
 layout (vertices = 3) out;
 
-const float TessFactor = 80;
+const float TessFactor = 63;
+uniform int IfTess;
 
 in vec2 Tex[];
 out vec2 TexCoords[];
@@ -30,6 +31,8 @@ float saturate( float x )
 float CalcFactor( vec4 p0, vec4 p1 )
 {
   vec4 pp0 = MatrWVP * p0, pp1 = MatrWVP * p1;
+  pp0 /= pp0.w;
+  pp1 /= pp1.w;
   /*
   pp0.x = saturate(pp0.x);
   pp0.y = saturate(pp0.y);
@@ -37,13 +40,19 @@ float CalcFactor( vec4 p0, vec4 p1 )
   pp1.y = saturate(pp1.y);
   */
 
-  if (pp0.z <= -2.0 && pp1.z <= -2.0)
-    return 0;
-  float sdw = distance(pp0.xyz / pp0.w, pp1.xyz / pp1.w) * 0.7;
+  float sdw = distance(pp0.xy, pp1.xy) * 0.7;
   float dw = 1.0 / min(1, distance(CameraPos, (p0 + p1).xyz / 2)) * sdw;
-  float pw = abs(dot(normalize(p0 - p1).xyz, normalize((p0 + p1).xyz / 2 - CameraPos))) * sdw;
   
-  return (dw + sdw + pw) * TessFactor;
+  return min(64, (dw + sdw) * TessFactor + 1) * IfTess;
+}
+
+float CalcInnerFactor( vec4 p0, vec4 p1, vec4 p2 )
+{
+  vec3
+    v0 = normalize((p1 - p0).xyz),
+    v1 = normalize((p1 - p0).xyz);
+  vec3 n = normalize(cross(v0, v1));
+  return pow(1.0 - abs(dot(n, normalize((p0 + p1 + p2).xyz / 3.0 - CameraPos))), 4);
 }
 
 int chek( float a )
@@ -67,12 +76,24 @@ void main( void )
   
   barrier();
 
-  gl_TessLevelOuter[2] = max(1, CalcFactor(gl_out[0].gl_Position, gl_out[1].gl_Position) * chek(float(Id[0] + Id[1])));  
-  gl_TessLevelOuter[0] = max(1, CalcFactor(gl_out[1].gl_Position, gl_out[2].gl_Position) * chek(float(Id[2] + Id[1])));
-  gl_TessLevelOuter[1] = max(1, CalcFactor(gl_out[2].gl_Position, gl_out[0].gl_Position) * chek(float(Id[0] + Id[2])));
+  vec4
+    p0 = gl_out[0].gl_Position,
+    p1 = gl_out[1].gl_Position,
+    p2 = gl_out[2].gl_Position;
 
-  if (gl_TessLevelOuter[2] == 1 || gl_TessLevelOuter[1] == 1 || gl_TessLevelOuter[0] == 1)
+  gl_TessLevelOuter[2] = max(1, CalcFactor(p0, p1)) * chek(float(Id[0] + Id[1]));  
+  gl_TessLevelOuter[0] = max(1, CalcFactor(p1, p2)) * chek(float(Id[2] + Id[1]));
+  gl_TessLevelOuter[1] = max(1, CalcFactor(p2, p0)) * chek(float(Id[0] + Id[2]));
+  
+  if (gl_TessLevelOuter[2] == 0 || gl_TessLevelOuter[1] == 0 || gl_TessLevelOuter[0] == 0)
+  {
     gl_TessLevelInner[0] = 1;
+    gl_TessLevelOuter[2] = max(1, gl_TessLevelOuter[2]);
+    gl_TessLevelOuter[0] = max(1, gl_TessLevelOuter[0]);
+    gl_TessLevelOuter[1] = max(1, gl_TessLevelOuter[1]);
+  }
   else
-    gl_TessLevelInner[0] = (gl_TessLevelOuter[0] + gl_TessLevelOuter[1] + gl_TessLevelOuter[2]) / 3.0;
+    gl_TessLevelInner[0] =
+      (CalcInnerFactor(p0, p1, p2) * 63 * 0.5 +
+          (gl_TessLevelOuter[0] + gl_TessLevelOuter[1] + gl_TessLevelOuter[2]) / 3.0 * 0.5) * IfTess + 1;
 }

@@ -35,6 +35,7 @@ tcg::unit_road::unit_road( anim *Ani, float H, float Lacunarity,
   Plane(vec(1 - 4, 0, 1 - 4), vec(0, 0, 58 + 8), vec(58 + 8, 0, 0)), EditMode(EDIT_TRIANGLES), ScaleY(1)
 {
   Houses.push_back(std::vector<INT>());
+  IfTess = 1;
 
   Ani->Camera.SetDirLocUp(vec(Width / 2,
                               Width * Ani->Camera.ProjDist,
@@ -64,6 +65,7 @@ tcg::unit_road::unit_road( anim *Ani, float H, float Lacunarity,
     IDs.push_back(0);
 
   CreateMountain(Mountain, Ani, Points, Triangles, IDs);
+  Mountain.Material->SetUniform("IfTess", IfTess);
 } /* End of 'tcg::unit_road::unit_road' function */
 
 /* Class destructor.
@@ -81,74 +83,62 @@ tcg::unit_road::~unit_road( VOID )
  */
 VOID tcg::unit_road::Response( VOID )
 {
-  static BOOL IsWireframe = FALSE, IsClick = FALSE, IsNoTranslate;
-  static INT ClickMsX, ClickMsY;
+  static BOOL IsWireframe = FALSE;
   static vec LookAt;
   static DOUBLE Dist, Angle;
 
+  if (Ani->KeysClick['T'])
+  {
+    IfTess = 1 - IfTess;
+    Mountain.Material->SetUniform("IfTess", IfTess);
+  }
+
   if (!IsLandscape)
   {
-    if (Ani->KeysClick[VK_LBUTTON] &&
-        Ani->MsX >= 0 && Ani->MsX < Ani->GetW() &&
-        Ani->MsY >= 0 && Ani->MsY < Ani->GetH())
-      IsClick = TRUE, ClickMsX = Ani->MsX, ClickMsY = Ani->MsY, IsNoTranslate = TRUE;
-    else if (IsClick)
+    if (Ani->KeysClick[VK_LBUTTON])
     {
-      if (Ani->Keys[VK_LBUTTON])
+      DOUBLE X = Ani->MsX, Y = Ani->MsY, W = Ani->GetW(), H = Ani->GetH();
+
+      ray Ray;
+      Ray.Dir = Ani->Camera.Dir * Ani->Camera.ProjDist +
+                Ani->Camera.Right * (X / W * Ani->Camera.Width - Ani->Camera.Width / 2) +
+                Ani->Camera.Up * (Ani->Camera.Height / 2 - Y / H * Ani->Camera.Height);
+      Ray.Org = Ani->Camera.Loc + Ray.Dir;
+      Ray.Dir.Normalize();
+
+      cd::collision Collision = Plane.Intersect(Ray, 0, 1);
+      if (Collision.IsCollide)
       {
-        DOUBLE dx = 1, dy = 1, w = Ani->GetW(), h = Ani->GetH();
-        if (w > h)
-          dx = w / h;
+        if (EditMode == EDIT_ROAD)
+        {
+          if (FirstPoint)
+            FirstPoint = FALSE;
+          else
+            AddSegment(PrevPoint, Collision.Intersection.Location);
+          PrevPoint = Collision.Intersection.Location;
+        }
+        else if (EditMode == EDIT_HOUSE)
+        {
+          Houses.back().push_back(Points.size());
+          Points.push_back(Collision.Intersection.Location);
+        }
         else
-          dy = h / w;
-        if (!IsNoTranslate)
-          Ani->Camera.Translate(vecf(-Ani->MsDeltaX / w * dx * Ani->Camera.Loc.Y / 1.5, 0,
-                                    -Ani->MsDeltaY / h * dy * Ani->Camera.Loc.Y / 1.5));
-        else if (abs(ClickMsX - Ani->MsX) >= 3 && abs(ClickMsY - Ani->MsY) >= 3)
         {
-          Ani->Camera.Translate(vecf((ClickMsX - Ani->MsX) / w * dx * Ani->Camera.Loc.Y / 1.5, 0,
-                                    (ClickMsY - Ani->MsY) / h * dy * Ani->Camera.Loc.Y / 1.5));
-          IsNoTranslate = FALSE;
+          AddPoint(Collision.Intersection.Location);
+          math::Triangulate(Points, Triangles);
         }
       }
+    }
+
+    if (Ani->Keys[VK_RBUTTON])
+    {
+      DOUBLE dx = 1, dy = 1, w = Ani->GetW(), h = Ani->GetH();
+      if (w > h)
+        dx = w / h;
       else
-      {
-        if (abs(ClickMsX - Ani->MsX) < 3 && abs(ClickMsY - Ani->MsY) < 3)
-        {
-          DOUBLE X = Ani->MsX, Y = Ani->MsY, W = Ani->GetW(), H = Ani->GetH();
-
-          ray Ray;
-          Ray.Dir = Ani->Camera.Dir * Ani->Camera.ProjDist +
-                    Ani->Camera.Right * (X / W * Ani->Camera.Width - Ani->Camera.Width / 2) +
-                    Ani->Camera.Up * (Ani->Camera.Height / 2 - Y / H * Ani->Camera.Height);
-          Ray.Org = Ani->Camera.Loc + Ray.Dir;
-          Ray.Dir.Normalize();
-
-          cd::collision Collision = Plane.Intersect(Ray, 0, 1);
-          if (Collision.IsCollide)
-          {
-            if (EditMode == EDIT_ROAD)
-            {
-              if (FirstPoint)
-                FirstPoint = FALSE;
-              else
-                AddSegment(PrevPoint, Collision.Intersection.Location);
-              PrevPoint = Collision.Intersection.Location;
-            }
-            else if (EditMode == EDIT_HOUSE)
-            {
-              Houses.back().push_back(Points.size());
-              Points.push_back(Collision.Intersection.Location);
-            }
-            else
-            {
-              AddPoint(Collision.Intersection.Location);
-              math::Triangulate(Points, Triangles);
-            }
-          }
-        }
-        IsClick = FALSE;
-      }
+        dy = h / w;
+      Ani->Camera.Translate(vecf(-Ani->MsDeltaX / w * dx * Ani->Camera.Loc.Y / 1.5, 0,
+                                 -Ani->MsDeltaY / h * dy * Ani->Camera.Loc.Y / 1.5));
     }
     if (Ani->Keys[VK_SPACE])
     {
@@ -532,20 +522,21 @@ VOID tcg::unit_road::AddPoint( const vec &Point )
  */
 VOID tcg::unit_road::AddSegment( const vec &P0, const vec &P1 )
 {
+  DOUBLE Scale = 5;
   INT I0 = -1, I1 = -1;
   for (INT i = 0; i < Segments.size(); i++)
   {
     if (sqrt((Points[Segments[i].P0].X - P0.X) * (Points[Segments[i].P0].X - P0.X) +
-             (Points[Segments[i].P0].Z - P0.Z) * (Points[Segments[i].P0].Z - P0.Z)) < RoadHalfWidth)
+             (Points[Segments[i].P0].Z - P0.Z) * (Points[Segments[i].P0].Z - P0.Z)) < RoadHalfWidth * Scale)
       I0 = Segments[i].P0;
     if (sqrt((Points[Segments[i].P1].X - P0.X) * (Points[Segments[i].P1].X - P0.X) +
-             (Points[Segments[i].P1].Z - P0.Z) * (Points[Segments[i].P1].Z - P0.Z)) < RoadHalfWidth)
+             (Points[Segments[i].P1].Z - P0.Z) * (Points[Segments[i].P1].Z - P0.Z)) < RoadHalfWidth * Scale)
       I0 = Segments[i].P1;
     if (sqrt((Points[Segments[i].P0].X - P1.X) * (Points[Segments[i].P0].X - P1.X) +
-             (Points[Segments[i].P0].Z - P1.Z) * (Points[Segments[i].P0].Z - P1.Z)) < RoadHalfWidth)
+             (Points[Segments[i].P0].Z - P1.Z) * (Points[Segments[i].P0].Z - P1.Z)) < RoadHalfWidth * Scale)
       I1 = Segments[i].P0;
     if (sqrt((Points[Segments[i].P1].X - P1.X) * (Points[Segments[i].P1].X - P1.X) +
-             (Points[Segments[i].P1].Z - P1.Z) * (Points[Segments[i].P1].Z - P1.Z)) < RoadHalfWidth)
+             (Points[Segments[i].P1].Z - P1.Z) * (Points[Segments[i].P1].Z - P1.Z)) < RoadHalfWidth * Scale)
       I1 = Segments[i].P1;
   }
   if (I0 == -1)

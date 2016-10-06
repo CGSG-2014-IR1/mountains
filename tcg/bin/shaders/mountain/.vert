@@ -30,5 +30,5 @@ void main( void )
   H0 = InH0;
   H1 = InH1;
   Tex = vec2(InPosition.x / 60, InPosition.z / 60);
-  gl_Position = vec4(InPosition, 1);
+  gl_Position = vec4(vec3(InPosition.x, texture2D(TextureHeight, Tex).a, InPosition.z), 1);
 }
