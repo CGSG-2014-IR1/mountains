@@ -36,7 +36,7 @@ namespace tcg
       if (r == 1)
         Gen();
       else
-        *Ani << new unit_road(this->Ani);
+        *Ani << new unit_road(this->Ani, H, Lacunarity, Octaves, Offset, Gain, FSeed);
       return;
     }
     N = true;

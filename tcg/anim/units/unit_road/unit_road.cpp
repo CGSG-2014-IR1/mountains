@@ -27,7 +27,10 @@
  *   - animation:
  *       anim *Ani;
  */
-tcg::unit_road::unit_road( anim *Ani ) :
+tcg::unit_road::unit_road( anim *Ani, float H, float Lacunarity,
+                           float Octaves, float Offset,
+                           float Gain, float FSeed ) :
+  fBm(H, Lacunarity, Gain, Offset, Octaves, FSeed),
   unit(Ani), Ani(Ani), Mountain(Ani), Road(Ani), Village(Ani), IsLandscape(FALSE), FirstPoint(TRUE),
   Plane(vec(1 - 4, 0, 1 - 4), vec(0, 0, 58 + 8), vec(58 + 8, 0, 0)), EditMode(EDIT_TRIANGLES), ScaleY(1)
 {

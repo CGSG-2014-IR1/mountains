@@ -86,7 +86,7 @@ namespace tcg
     void Gen( void )
     {
       hm_gen(H, Lacunarity, Gain, Offset, Octaves, (INT)(FSeed * 100));
-      *Ani << new unit_road(this->Ani);
+      *Ani << new unit_road(this->Ani, H, Lacunarity, Octaves, Offset, Gain, FSeed);
       Rend = false;
     }
 

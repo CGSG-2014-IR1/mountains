@@ -23,6 +23,7 @@
 #include "../../render/prim/patch3.h"
 #include "../../render/prim/trimesh.h"
 #include "../../../math/cd.h"
+#include "../../../math/noise.h"
 
 /* Computational geometry project namespace */
 namespace tcg
@@ -33,6 +34,7 @@ namespace tcg
   class unit_road : public unit
   {
   private:
+    fBm_multi_ridged fBm;
 
     #include "primitives.h"
 
@@ -1896,7 +1898,9 @@ namespace tcg
      *   - animation:
      *       anim *Ani;
      */
-    unit_road( anim *Ani );
+    unit_road( anim *Ani, float H, float Lacunarity,
+               float Octaves, float Offset,
+               float Gain, float FSeed );
 
     /* Class destructor.
      * ARGUMENTS: None.
