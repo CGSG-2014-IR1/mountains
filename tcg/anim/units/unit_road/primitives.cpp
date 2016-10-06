@@ -39,7 +39,7 @@ VOID tcg::unit_road::CreateMountain( tcg::primitive::patch3 &Tri, anim *Ani, con
   Tri.Material = Ani->AddMaterial("mountain", "mountain");
   Tri.Material->SetUniform("Height", 4.0f);
   Tri.Material->AddTexture(Ani->AddTexture("TextureHeight", "heightmap1.float"));
-  Tri.Material->AddTexture(Ani->AddTexture("Texture", "mountain_light.jpg"));
+  Tri.Material->AddTexture(Ani->AddTexture("Texture", "sandlines.jpg"));
   Tri.Material->AddTexture(Ani->AddTexture("ColorMap", "cm.g24"));
   Tri.Material->AddTexture(Ani->AddTexture("NormalMap", "normalmap1.short"));
 

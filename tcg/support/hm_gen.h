@@ -45,9 +45,9 @@ namespace tcg
         for (int j = 0; j < w; j++)
         {
           tsg::TVec<double>
-            v0 = tsg::TVec<double>(j * step, fBm(vec(j / (double)w * b, i / (double)w * b, 0)), i * step),
-            v1 = tsg::TVec<double>(v0.X + step, fBm(vec((j + 1) / (double)w * b, i / (double)w * b, 0)), v0.Z),
-            v2 = tsg::TVec<double>(v0.X, fBm(vec(j / (double)w * b, (i + 1) / (double)w * b, 0)), v0.Z + step);
+            v0 = tsg::TVec<double>(j / (double)w * b, fBm(vec(j / (double)w * b, i / (double)w * b, 0)), i / (double)w * b),
+            v1 = tsg::TVec<double>((j + 1) / (double)w * b, fBm(vec((j + 1) / (double)w * b, i / (double)w * b, 0)), i / (double)w * b),
+            v2 = tsg::TVec<double>(j / (double)w * b, fBm(vec(j / (double)w * b, (i + 1) / (double)w * b, 0)), (i + 1) / (double)w * b);
           tsg::TVec<double> r = ((v1 - v0) % (v2 - v0)).Normalizing();
           r *= Sign(r.Y);
           npix[i * w + j] = tsg::TVec<short>(r.X * 32767, r.Y * 32767, r.Z * 32767);

@@ -105,10 +105,7 @@ float fBm( vec3 point )
 
     weight = max(0.0, min(1.0, signal * gain));
 
-    signal = abs(Noise(point.x, point.y, point.z));
-    signal = offset - signal;
-    signal = signal * signal;
-    signal *= weight;
+    signal = weight * pow(offset - abs(Noise(point.x, point.y, point.z)), 2);
     result += signal * Exponent(i);
   }
   return (result);
@@ -124,7 +121,7 @@ void main( void )
 {
   vec3 c = HColor(Pos.y / Height + 0.3 * Pos.y / Height * fBm(Pos * 10));
   vec3 n = texture2D(NormalMap, Tex).rgb;
-  vec3 d = normalize(vec3(1, 1, 1));
+  vec3 d = normalize(vec3(0.2, 1, 0.2));
   c *= abs(dot(n, d));
   OutColor = vec4(c, 1.0);
 }
